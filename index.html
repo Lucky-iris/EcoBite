@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoBite — AI-Powered Food Waste Reduction &amp; Redistribution</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..700,0..100&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root{
+    --soil:        #14110D;
+    --soil-2:      #1B2A1A;
+    --moss:        #223420;
+    --leaf:        #7FA65C;
+    --leaf-bright: #9CC178;
+    --amber:       #E0A458;
+    --rust:        #C1622B;
+    --cream:       #F4EFE1;
+    --cream-dim:   #C9C2AE;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html, body{
+    height:100%;
+    background: var(--soil);
+    overflow: hidden;
+  }
+
+  body{
+    font-family: 'Inter', sans-serif;
+    color: var(--cream);
+  }
+
+  .stage{
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--soil);
+    perspective: 1200px;
+    overflow: hidden;
+  }
+
+  .stage > *{
+    position: relative;
+    z-index: 1;
+  }
+
+  /* the kitchen photo itself — full-bleed backdrop with a slow ambient
+     zoom so it doesn't sit dead-still behind the drop */
+  .backdrop{
+    position: absolute;
+    inset: -3%;
+    background-image: url('kitchen-bg.jpg');
+    background-size: cover;
+    background-position: center 62%;
+    z-index: 0;
+    animation: backdrop-breathe 22s ease-in-out infinite alternate;
+  }
+  @keyframes backdrop-breathe{
+    0%   { transform: scale(1); }
+    100% { transform: scale(1.055); }
+  }
+
+  /* light contrast scrim — just enough for the wordmark/tagline to read,
+     kept minimal so the photo stays the visible background */
+  .backdrop::after{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 55% at 50% 46%, rgba(20,17,13,0.4) 0%, transparent 68%),
+      linear-gradient(180deg, rgba(20,17,13,0.25) 0%, rgba(20,17,13,0.05) 22%, rgba(20,17,13,0.15) 60%, rgba(20,17,13,0.6) 100%);
+  }
+
+  /* the two pendant bulbs in the photo — soft pulsing glow to bring
+     the scene to life */
+  .bulb-glow{
+    position: absolute;
+    top: 6%;
+    width: 9vw;
+    height: 9vw;
+    max-width: 130px;
+    max-height: 130px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,214,140,0.55) 0%, rgba(255,214,140,0) 70%);
+    z-index: 0;
+    animation: bulb-pulse 4.5s ease-in-out infinite;
+  }
+  .bulb-glow.left{ left: 16%; animation-delay: 0s; }
+  .bulb-glow.right{ left: 78%; animation-delay: 1.4s; top: 3%; }
+  @keyframes bulb-pulse{
+    0%, 100% { opacity: 0.55; transform: scale(1); }
+    50%      { opacity: 0.85; transform: scale(1.18); }
+  }
+
+  /* ---------- ambient motes: waste settling → drifting up as nutrients ---------- */
+  .motes{
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .mote{
+    position: absolute;
+    bottom: -5%;
+    border-radius: 50%;
+    opacity: 0;
+    filter: blur(0.5px);
+    animation: drift linear infinite;
+  }
+  @keyframes drift{
+    0%   { transform: translateY(0) translateX(0); opacity: 0; }
+    8%   { opacity: 0.55; }
+    92%  { opacity: 0.35; }
+    100% { transform: translateY(-115vh) translateX(var(--drift-x, 20px)); opacity: 0; }
+  }
+
+  /* ---------- the mark: falls from above with weight, settles with a bounce ---------- */
+  .mark-wrap{
+    width: clamp(84px, 11vw, 132px);
+    height: clamp(84px, 11vw, 132px);
+    margin-bottom: clamp(18px, 2.4vw, 28px);
+    transform: translateY(-140vh) rotate(-14deg);
+    animation: fall 1.15s cubic-bezier(.31,.98,.4,1.18) 0.15s forwards;
+  }
+
+  @keyframes fall{
+    0%   { transform: translateY(-140vh) rotate(-14deg); }
+    62%  { transform: translateY(6px)     rotate(4deg); }
+    78%  { transform: translateY(-14px)   rotate(-2deg); }
+    90%  { transform: translateY(4px)     rotate(1deg); }
+    100% { transform: translateY(0)       rotate(0deg); }
+  }
+
+  .mark-wrap svg{ width:100%; height:100%; display:block; }
+
+  /* soft contact shadow that squashes into place with the landing */
+  .contact-shadow{
+    width: clamp(60px, 8vw, 96px);
+    height: 10px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(0,0,0,0.55) 0%, transparent 75%);
+    transform: scaleX(0.3);
+    opacity: 0;
+    margin-top: -6px;
+    margin-bottom: clamp(10px, 1.6vw, 18px);
+    animation: shadow-land 1.15s cubic-bezier(.31,.98,.4,1.18) 0.15s forwards;
+  }
+  @keyframes shadow-land{
+    0%   { transform: scaleX(0.15); opacity: 0; }
+    62%  { transform: scaleX(1.1); opacity: 0.7; }
+    78%  { transform: scaleX(0.75); opacity: 0.45; }
+    100% { transform: scaleX(0.9); opacity: 0.55; }
+  }
+
+  /* ---------- wordmark: pulled forward from behind the dark ---------- */
+  .wordmark{
+    font-family: 'Fraunces', serif;
+    font-optical-sizing: auto;
+    font-weight: 460;
+    font-size: clamp(2.6rem, 9vw, 6rem);
+    letter-spacing: -0.01em;
+    line-height: 1;
+    color: var(--cream);
+    opacity: 0;
+    filter: blur(14px);
+    transform: translateZ(-600px) scale(0.72);
+    transform-style: preserve-3d;
+    animation: emerge 1.05s cubic-bezier(.22,.82,.26,1.02) 1.05s forwards;
+  }
+
+  @keyframes emerge{
+    0%   { opacity: 0;    filter: blur(14px); transform: translateZ(-600px) scale(0.72); }
+    65%  { opacity: 1;    filter: blur(0px);  transform: translateZ(0)      scale(1.035); }
+    100% { opacity: 1;    filter: blur(0px);  transform: translateZ(0)      scale(1); }
+  }
+
+  .wordmark .bite{
+    color: var(--leaf-bright);
+  }
+
+  /* ---------- tagline: settles in last ---------- */
+  .tagline{
+    margin-top: clamp(14px, 2vw, 20px);
+    font-size: clamp(0.82rem, 1.15vw, 1rem);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--cream-dim);
+    opacity: 0;
+    transform: translateY(10px);
+    animation: settle 0.7s ease-out 1.95s forwards;
+  }
+  @keyframes settle{
+    to{ opacity: 1; transform: translateY(0); }
+  }
+
+  .tagline .divider{
+    display:inline-block;
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: var(--amber);
+    margin: 0 10px;
+    vertical-align: middle;
+    opacity: 0.8;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .mark-wrap, .contact-shadow, .wordmark, .tagline, .mote{
+      animation: none !important;
+      opacity: 1 !important;
+      filter: none !important;
+      transform: none !important;
+    }
+    .contact-shadow{ transform: scaleX(0.9); }
+  }
+</style>
+</head>
+<body>
+
+  <div class="stage" id="stage">
+
+    <div class="backdrop"></div>
+    <div class="bulb-glow left"></div>
+    <div class="bulb-glow right"></div>
+
+    <div class="motes" id="motes"></div>
+
+    <div class="mark-wrap">
+      <!-- EcoBite mark: a circle with a bite taken out, a leaf sprouting from the wound -->
+      <svg viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="bodyGrad" x1="20%" y1="0%" x2="90%" y2="100%">
+            <stop offset="0%" stop-color="#E0A458"/>
+            <stop offset="55%" stop-color="#C1622B"/>
+            <stop offset="100%" stop-color="#8F4620"/>
+          </linearGradient>
+          <linearGradient id="leafGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#5E8A43"/>
+            <stop offset="100%" stop-color="#9CC178"/>
+          </linearGradient>
+        </defs>
+
+        <!-- body: circle with an organic bite removed from upper-right -->
+        <path d="
+          M 70 12
+          A 58 58 0 1 1 21.5 100.8
+          A 34 34 0 0 0 60.5 64.5
+          A 30 30 0 0 0 92.8 31.2
+          A 58 58 0 0 1 70 12
+          Z"
+          fill="url(#bodyGrad)"/>
+
+        <!-- leaf sprouting from the bite -->
+        <g transform="translate(70,34) rotate(18)">
+          <path d="M 0 26 C -2 10, 8 -6, 26 -10 C 24 6, 16 20, 0 26 Z" fill="url(#leafGrad)"/>
+          <path d="M 0 25 C 4 12, 10 0, 24 -8" stroke="#3F5E2C" stroke-width="1.4" fill="none" stroke-linecap="round" opacity="0.55"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="contact-shadow"></div>
+
+    <h1 class="wordmark">Eco<span class="bite">Bite</span></h1>
+
+    <p class="tagline">AI-POWERED FOOD RESCUE<span class="divider"></span>FROM SURPLUS TO PLATE</p>
+
+  </div>
+
+<script>
+  // Ambient motes — soil-toned particles drifting upward (decay → nourishment)
+  (function(){
+    const container = document.getElementById('motes');
+    const count = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 22;
+    const colors = ['#E0A458', '#7FA65C', '#C1622B'];
+
+    for (let i = 0; i < count; i++){
+      const el = document.createElement('div');
+      el.className = 'mote';
+      const size = 2 + Math.random() * 4;
+      const left = Math.random() * 100;
+      const duration = 9 + Math.random() * 10;
+      const delay = Math.random() * 12;
+      const driftX = (Math.random() * 60 - 30) + 'px';
+      const color = colors[Math.floor(Math.random() * colors.length)];
+
+      el.style.width = size + 'px';
+      el.style.height = size + 'px';
+      el.style.left = left + '%';
+      el.style.background = color;
+      el.style.setProperty('--drift-x', driftX);
+      el.style.animationDuration = duration + 's';
+      el.style.animationDelay = delay + 's';
+
+      container.appendChild(el);
+    }
+  })();
+</script>
+
+</body>
+</html>
