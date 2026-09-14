@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ecobite — Food Rescue</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root { --soil:#14110d; --moss:#173c22; --leaf:#8fc94d; --orange:#f58b08; --cream:#f7f3e9; --muted:#d1cabc; }
+    * { box-sizing:border-box; margin:0; }
+    html { scroll-snap-type:y mandatory; scroll-behavior:smooth; }
+    body { background:var(--soil); color:var(--cream); font-family:Inter, sans-serif; }
+    .panel { min-height:100vh; scroll-snap-align:start; scroll-snap-stop:always; }
+    .home { position:relative; display:grid; place-items:center; overflow:hidden; padding:40px 20px; text-align:center; isolation:isolate; }
+    .backdrop { position:absolute; z-index:-2; inset:-3%; background:url('kitchen-bg.jpg') center 62% / cover; animation:breathe 20s ease-in-out infinite alternate; }
+    .home::after { content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse 65% 55% at 50% 48%, rgba(20,17,13,.20), rgba(20,17,13,.72)); }
+    .brand { width:clamp(230px, 36vw, 440px); filter:drop-shadow(0 10px 20px rgba(0,0,0,.22)); animation:land 1s cubic-bezier(.25,.9,.35,1.1) both; }
+    .tagline { margin-top:20px; color:var(--muted); font-size:clamp(.75rem, 1.4vw, .98rem); letter-spacing:.08em; }
+    .tagline span { color:var(--orange); padding:0 .6em; }
+    .scroll-cue { position:absolute; bottom:28px; font-size:.72rem; color:var(--muted); letter-spacing:.13em; text-transform:uppercase; animation:fade .7s .8s both; text-decoration:none; }
+    .scroll-cue::after { content:'↓'; display:block; color:var(--orange); font-size:1.4rem; line-height:1.2; animation:bob 1.5s ease-in-out infinite; }
+    .signin { display:grid; place-items:center; padding:32px 20px; background:linear-gradient(135deg, #0f1b12, var(--soil)); }
+    .card { width:min(100%, 420px); padding:clamp(30px, 6vw, 52px); border:1px solid rgba(247,243,233,.15); border-radius:24px; background:rgba(20,17,13,.72); box-shadow:0 24px 70px rgba(0,0,0,.35); }
+    .card img { display:block; width:140px; margin:0 auto 22px; }
+    h1 { font:600 2rem Fraunces, serif; text-align:center; }
+    .intro { margin:10px 0 28px; color:var(--muted); font-size:.9rem; line-height:1.55; text-align:center; }
+    label { display:block; margin:16px 0 7px; font-size:.75rem; font-weight:600; letter-spacing:.05em; }
+    input { width:100%; padding:13px 14px; border:1px solid rgba(247,243,233,.22); border-radius:10px; background:rgba(247,243,233,.07); color:var(--cream); font:inherit; outline:none; }
+    input:focus { border-color:var(--leaf); }
+    button { width:100%; margin-top:24px; padding:14px; border:0; border-radius:10px; color:#173c22; background:var(--leaf); cursor:pointer; font:600 .9rem Inter, sans-serif; }
+    .back { display:block; margin-top:25px; color:var(--muted); font-size:.82rem; text-align:center; text-decoration:none; }
+    @keyframes breathe { to { transform:scale(1.05); } }
+    @keyframes land { from { opacity:0; transform:translateY(-35px) scale(.9); } to { opacity:1; transform:none; } }
+    @keyframes fade { from { opacity:0; transform:translateY(10px); } to { opacity:1; } }
+    @keyframes bob { 50% { transform:translateY(6px); } }
+    @media (prefers-reduced-motion:reduce) { *,*::after { animation:none!important; scroll-behavior:auto!important; } }
+  </style>
+</head>
+<body>
+  <section class="panel home" id="home">
+    <div class="backdrop"></div>
+    <div>
+      <img class="brand" src="ecobite-logo.png" alt="Ecobite">
+      <p class="tagline">AI-POWERED FOOD RESCUE <span>•</span> FROM SURPLUS TO PLATE</p>
+    </div>
+    <a class="scroll-cue" href="#sign-in">Scroll to sign in</a>
+  </section>
+  <section class="panel signin" id="sign-in">
+    <form class="card">
+      <img src="ecobite-logo.png" alt="Ecobite">
+      <h1>Welcome back</h1>
+      <p class="intro">Sign in to rescue more food and make every meal matter.</p>
+      <label for="email">EMAIL ADDRESS</label>
+      <input id="email" type="email" placeholder="you@example.com" required>
+      <label for="password">PASSWORD</label>
+      <input id="password" type="password" placeholder="••••••••" required>
+      <button type="submit">Sign in</button>
+      <a class="back" href="#home">↑ Scroll back to home</a>
+    </form>
+  </section>
+</body>
+</html>
