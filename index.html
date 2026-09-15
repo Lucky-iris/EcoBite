@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoBite — Rescue food before it's wasted</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#0B1F16;
+    --bg-deep-2:#12291D;
+    --bg-deep-3:#183524;
+    --cream:#F2EFE2;
+    --cream-2:#EAE5D2;
+    --ink:#15231A;
+    --ink-soft:#3B4E40;
+    --leaf:#4F9A52;
+    --leaf-bright:#8BC34A;
+    --orange:#F2994A;
+    --orange-deep:#D9782E;
+    --tomato:#E1573F;
+    --line-dark:rgba(255,255,255,0.14);
+    --line-light:rgba(21,35,26,0.12);
+    --max:1180px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg-deep);
+    color:var(--cream);
+    font-family:'Inter',sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  img{max-width:100%;display:block;}
+  a{color:inherit;}
+  h1,h2,h3{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    line-height:1.08;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  p{margin:0;}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 32px;}
+  section{position:relative;}
+  .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);}
+
+  /* ---------- NAV ---------- */
+  header.site-nav{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    padding:20px 0;
+    transition:background .35s ease, padding .35s ease, border-color .35s ease;
+    border-bottom:1px solid transparent;
+  }
+  header.site-nav.scrolled{
+    background:rgba(11,31,22,0.86);
+    backdrop-filter:blur(10px);
+    padding:14px 0;
+    border-bottom:1px solid var(--line-dark);
+  }
+  .nav-row{display:flex;align-items:center;justify-content:space-between;gap:24px;}
+  .brand{display:flex;align-items:center;gap:10px;text-decoration:none;}
+  .brand img{height:28px;width:auto;}
+  .brand span{font-family:'Fraunces',serif;font-weight:600;font-size:1.15rem;color:var(--cream);}
+  nav.links{display:flex;align-items:center;gap:32px;}
+  nav.links a{
+    font-size:0.94rem;font-weight:500;text-decoration:none;color:var(--cream);
+    opacity:0.82;transition:opacity .2s ease;
+  }
+  nav.links a:hover{opacity:1;}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;
+    padding:11px 22px;border-radius:100px;font-weight:600;font-size:0.94rem;
+    text-decoration:none;border:1px solid transparent;cursor:pointer;
+    transition:transform .18s ease, background .2s ease, box-shadow .2s ease, border-color .2s ease;
+    font-family:'Inter',sans-serif;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{background:var(--orange);color:#241004;}
+  .btn-primary:hover{background:var(--orange-deep);}
+  .btn-outline{border-color:var(--line-dark);color:var(--cream);background:transparent;}
+  .btn-outline:hover{border-color:var(--cream);}
+  .btn-dark{background:var(--ink);color:var(--cream-2);}
+  .btn-dark:hover{background:#233527;}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    min-height:100vh;
+    display:flex;flex-direction:column;justify-content:center;
+    padding:150px 0 90px;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse 900px 520px at 18% -8%, rgba(139,195,74,0.16), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 88% 6%, rgba(242,153,74,0.13), transparent 55%),
+      linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-deep-2) 100%);
+  }
+  .hero-bg-photos{position:absolute;inset:0;z-index:0;pointer-events:none;}
+  .hero-bg-photos img{
+    position:absolute;border-radius:18px;object-fit:cover;
+    filter:saturate(0.75) brightness(0.55);
+    opacity:0.34;
+  }
+  .hbg-1{width:280px;height:360px;left:-60px;top:100px;transform:rotate(-9deg);}
+  .hbg-2{width:260px;height:320px;right:-50px;top:60px;transform:rotate(8deg);}
+  .hbg-3{width:220px;height:220px;right:6%;bottom:-40px;transform:rotate(-6deg);opacity:0.22;}
+
+  .hero-inner{position:relative;z-index:2;text-align:center;}
+  .hero-mark{
+    display:flex;align-items:center;justify-content:center;gap:18px;
+    margin-bottom:34px;flex-wrap:wrap;
+  }
+  .logo-icon-wrap{
+    animation:dropIn 1.15s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .logo-icon-wrap img{width:clamp(64px,9vw,104px);height:auto;}
+  .logo-wordmark{
+    animation:emerge .65s cubic-bezier(.2,.9,.3,1) both;
+    animation-delay:0.95s;
+  }
+  .logo-wordmark img{height:clamp(38px,5.4vw,60px);width:auto;}
+
+  @keyframes dropIn{
+    0%{transform:translateY(-150vh) rotate(-12deg) scale(1);opacity:0;}
+    8%{opacity:1;}
+    50%{transform:translateY(0) rotate(6deg) scale(1);opacity:1;}
+    62%{transform:translateY(-14px) rotate(-3deg) scaleY(0.9) scaleX(1.06);}
+    75%{transform:translateY(7px) rotate(2deg) scaleY(1.05) scaleX(0.97);}
+    88%{transform:translateY(-2px) rotate(-1deg) scale(1);}
+    100%{transform:translateY(0) rotate(0deg) scale(1);opacity:1;}
+  }
+  @keyframes emerge{
+    0%{opacity:0;transform:translateX(-46px) scale(0.4);}
+    100%{opacity:1;transform:translateX(0) scale(1);}
+  }
+
+  .hero h1{
+    font-size:clamp(2.3rem,5.4vw,4.1rem);
+    max-width:15ch;margin:0 auto 22px;
+    opacity:0;transform:translateY(16px);
+    animation:fadeUp .7s ease-out both;animation-delay:1.15s;
+    color:var(--cream);
+  }
+  .hero .lede{
+    max-width:52ch;margin:0 auto 38px;
+    font-size:1.1rem;color:rgba(242,239,226,0.78);
+    opacity:0;transform:translateY(16px);
+    animation:fadeUp .7s ease-out both;animation-delay:1.35s;
+  }
+  .hero .cta-row{
+    display:flex;gap:16px;justify-content:center;flex-wrap:wrap;
+    opacity:0;transform:translateY(16px);
+    animation:fadeUp .7s ease-out both;animation-delay:1.5s;
+  }
+  @keyframes fadeUp{to{opacity:1;transform:none;}}
+
+  .scroll-cue{
+    position:absolute;left:50%;bottom:34px;transform:translateX(-50%);
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    opacity:0;animation:fadeUp .6s ease-out both;animation-delay:1.9s;
+    z-index:2;
+  }
+  .scroll-cue span{font-size:0.78rem;letter-spacing:0.02em;color:rgba(242,239,226,0.55);}
+  .scroll-cue .chev{
+    width:11px;height:11px;border-right:2px solid rgba(242,239,226,0.55);
+    border-bottom:2px solid rgba(242,239,226,0.55);
+    transform:rotate(45deg);
+    animation:bob 1.7s ease-in-out infinite;
+  }
+  @keyframes bob{0%,100%{transform:rotate(45deg) translate(0,0);}50%{transform:rotate(45deg) translate(4px,4px);}}
+
+  @media (prefers-reduced-motion: reduce){
+    .logo-icon-wrap,.logo-wordmark,.hero h1,.hero .lede,.hero .cta-row,.scroll-cue{
+      animation:none !important;opacity:1 !important;transform:none !important;
+    }
+    .scroll-cue .chev{animation:none !important;}
+    html{scroll-behavior:auto;}
+  }
+
+  /* ---------- STATS ---------- */
+  .stats{
+    background:var(--cream);color:var(--ink);
+    padding:110px 0 100px;
+  }
+  .stats h2{
+    font-size:clamp(1.7rem,3.2vw,2.5rem);
+    max-width:18ch;margin-bottom:56px;
+    color:var(--ink);
+  }
+  .stats-grid{
+    display:grid;grid-template-columns:1.1fr 1fr;gap:64px;align-items:center;
+  }
+  .stat-photo{
+    position:relative;
+  }
+  .stat-photo img{
+    width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:20px;
+    transform:rotate(-3deg);
+    box-shadow:0 26px 50px -20px rgba(21,35,26,0.35);
+    background:var(--cream-2);
+  }
+  .stat-photo .caption{
+    position:absolute;bottom:-18px;left:20px;
+    background:var(--ink);color:var(--cream-2);
+    padding:10px 16px;border-radius:10px;
+    font-size:0.82rem;font-weight:500;
+    transform:rotate(2deg);
+    box-shadow:0 12px 24px -10px rgba(0,0,0,0.4);
+  }
+  .stat-list{display:flex;flex-direction:column;gap:34px;}
+  .stat-item{border-top:1px solid var(--line-light);padding-top:22px;}
+  .stat-item:first-child{border-top:none;padding-top:0;}
+  .stat-number{
+    font-family:'Fraunces',serif;font-weight:600;font-size:clamp(2.2rem,3.6vw,3.1rem);
+    color:var(--ink);display:block;line-height:1;
+  }
+  .stat-number .unit{font-size:0.5em;font-weight:500;margin-left:4px;color:var(--ink-soft);}
+  .stat-item p{margin-top:10px;max-width:44ch;color:var(--ink-soft);font-size:0.98rem;}
+  .stat-source{
+    margin-top:44px;font-size:0.82rem;color:var(--ink-soft);opacity:0.75;
+  }
+
+  /* ---------- HOW IT WORKS ---------- */
+  .how{
+    background:var(--bg-deep-2);
+    padding:120px 0;
+    border-top:1px solid var(--line-dark);
+  }
+  .how-head{max-width:640px;margin-bottom:70px;}
+  .how-head h2{font-size:clamp(1.8rem,3.4vw,2.6rem);color:var(--cream);margin-bottom:16px;}
+  .how-head p{color:rgba(242,239,226,0.72);font-size:1.05rem;max-width:52ch;}
+
+  .step{
+    display:grid;grid-template-columns:0.9fr 1.1fr;gap:56px;align-items:center;
+    padding:52px 0;border-top:1px solid var(--line-dark);
+  }
+  .step:last-child{padding-bottom:0;}
+  .step:nth-child(even){grid-template-columns:1.1fr 0.9fr;}
+  .step:nth-child(even) .step-media{order:2;}
+  .step:nth-child(even) .step-text{order:1;}
+  .step-index{
+    font-family:'Fraunces',serif;color:var(--leaf-bright);font-size:0.95rem;
+    letter-spacing:0.02em;margin-bottom:14px;display:block;font-weight:600;
+  }
+  .step-text h3{font-size:clamp(1.4rem,2.2vw,1.9rem);color:var(--cream);margin-bottom:14px;}
+  .step-text p{color:rgba(242,239,226,0.75);max-width:46ch;font-size:1rem;}
+  .step-media img{
+    width:100%;aspect-ratio:5/4;object-fit:cover;border-radius:16px;
+    background:var(--bg-deep-3);
+  }
+
+  /* ---------- COLLAGE / NETWORK ---------- */
+  .network{
+    background:var(--bg-deep);
+    padding:120px 0 130px;
+  }
+  .network-head{max-width:640px;margin:0 auto 64px;text-align:center;}
+  .network-head h2{font-size:clamp(1.8rem,3.4vw,2.6rem);color:var(--cream);margin-bottom:16px;}
+  .network-head p{color:rgba(242,239,226,0.72);font-size:1.05rem;max-width:52ch;margin:0 auto;}
+
+  .collage{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    grid-auto-rows:120px;
+    gap:18px;
+    max-width:1040px;margin:0 auto;
+  }
+  .tile{
+    position:relative;border-radius:16px;overflow:hidden;
+    box-shadow:0 20px 40px -22px rgba(0,0,0,0.55);
+    transition:transform .35s ease;
+  }
+  .tile img{width:100%;height:100%;object-fit:cover;background:var(--bg-deep-3);}
+  .tile .tag{
+    position:absolute;left:14px;bottom:14px;
+    background:rgba(11,31,22,0.72);backdrop-filter:blur(4px);
+    color:var(--cream);font-size:0.78rem;font-weight:500;
+    padding:6px 12px;border-radius:100px;
+  }
+  .t1{grid-column:1 / 3;grid-row:1 / 3;transform:rotate(-2deg);}
+  .t2{grid-column:3 / 5;grid-row:1 / 2;transform:rotate(1.5deg);}
+  .t3{grid-column:5 / 7;grid-row:1 / 3;transform:rotate(-1deg);}
+  .t4{grid-column:3 / 4;grid-row:2 / 3;transform:rotate(2deg);}
+  .t5{grid-column:4 / 5;grid-row:2 / 3;transform:rotate(-1.5deg);}
+  .t6{grid-column:1 / 3;grid-row:3 / 4;transform:rotate(1deg);}
+  .t7{grid-column:3 / 5;grid-row:3 / 4;transform:rotate(-2deg);}
+  .t8{grid-column:5 / 7;grid-row:3 / 4;transform:rotate(1.5deg);}
+
+  /* ---------- CTA ---------- */
+  .cta-band{
+    background:linear-gradient(180deg, var(--bg-deep-2), var(--ink) 140%);
+    padding:120px 0;
+    border-top:1px solid var(--line-dark);
+    text-align:center;
+  }
+  .cta-band h2{
+    font-size:clamp(1.9rem,4vw,3rem);color:var(--cream);
+    max-width:16ch;margin:0 auto 18px;
+  }
+  .cta-band p{color:rgba(242,239,226,0.72);max-width:50ch;margin:0 auto 38px;font-size:1.05rem;}
+  form.waitlist{
+    display:flex;gap:10px;justify-content:center;flex-wrap:wrap;max-width:460px;margin:0 auto;
+  }
+  form.waitlist input[type="email"]{
+    flex:1 1 240px;padding:13px 18px;border-radius:100px;border:1px solid var(--line-dark);
+    background:rgba(255,255,255,0.06);color:var(--cream);font-size:0.95rem;font-family:'Inter',sans-serif;
+    outline:none;transition:border-color .2s ease;
+  }
+  form.waitlist input[type="email"]::placeholder{color:rgba(242,239,226,0.45);}
+  form.waitlist input[type="email"]:focus{border-color:var(--leaf-bright);}
+  .waitlist-note{margin-top:16px;font-size:0.85rem;color:rgba(242,239,226,0.55);}
+  .waitlist-note a{color:var(--leaf-bright);text-decoration:underline;text-underline-offset:3px;}
+  .waitlist-success{
+    display:none;margin-top:22px;color:var(--leaf-bright);font-weight:500;font-size:0.98rem;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{background:var(--ink);color:rgba(242,239,226,0.65);padding:64px 0 32px;}
+  .footer-top{
+    display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap;
+    padding-bottom:44px;border-bottom:1px solid rgba(255,255,255,0.1);
+  }
+  .footer-brand .brand span{color:var(--cream-2);}
+  .footer-brand p{margin-top:14px;max-width:32ch;font-size:0.9rem;}
+  .footer-cols{display:flex;gap:64px;flex-wrap:wrap;}
+  .footer-col h4{font-size:0.88rem;color:var(--cream-2);margin-bottom:14px;font-weight:600;}
+  .footer-col a{display:block;font-size:0.88rem;margin-bottom:10px;text-decoration:none;color:rgba(242,239,226,0.62);transition:color .2s ease;}
+  .footer-col a:hover{color:var(--cream-2);}
+  .footer-bottom{
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
+    padding-top:26px;font-size:0.8rem;color:rgba(242,239,226,0.45);
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width:860px){
+    .stats-grid{grid-template-columns:1fr;gap:44px;}
+    .stat-photo img{aspect-ratio:16/10;transform:rotate(0);}
+    .stat-photo .caption{display:none;}
+    .step,.step:nth-child(even){grid-template-columns:1fr;gap:26px;}
+    .step:nth-child(even) .step-media,.step:nth-child(even) .step-text{order:0;}
+    .collage{grid-template-columns:repeat(2,1fr);grid-auto-rows:150px;}
+    .t1,.t2,.t3,.t4,.t5,.t6,.t7,.t8{grid-column:auto;grid-row:auto;transform:rotate(0);}
+    nav.links{display:none;}
+  }
+  @media (max-width:520px){
+    .hero{padding-top:130px;}
+    .hero-mark{gap:10px;}
+    .wrap{padding:0 20px;}
+  }
+  /* ================= MOTION LAYER ================= */
+
+  /* Reading progress — a thin route line filling as you move down the page */
+  .scroll-progress{
+    position:fixed;top:0;left:0;right:0;height:2px;z-index:60;
+    background:linear-gradient(90deg,var(--leaf-bright),var(--orange));
+    transform:scaleX(0);transform-origin:0 50%;will-change:transform;
+  }
+
+  /* Hero: slow light drift behind the content */
+  .hero::before{
+    content:"";position:absolute;inset:-25%;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(circle at 32% 34%, rgba(139,195,74,0.13), transparent 55%),
+      radial-gradient(circle at 72% 62%, rgba(242,153,74,0.11), transparent 55%);
+    animation:auraDrift 28s ease-in-out infinite alternate;
+  }
+  @keyframes auraDrift{
+    from{transform:translate3d(-2%,-1%,0) scale(1);}
+    to{transform:translate3d(3%,2%,0) scale(1.09);}
+  }
+
+  /* Hero photos: gentle float + scroll parallax */
+  .hero-bg-photos{transform:translate3d(0,var(--hero-par,0px),0);will-change:transform;}
+  .hbg-1{animation:floatA 13s ease-in-out infinite alternate;}
+  .hbg-2{animation:floatB 16s ease-in-out infinite alternate;}
+  .hbg-3{animation:floatC 11s ease-in-out infinite alternate;}
+  @keyframes floatA{from{transform:rotate(-9deg) translate3d(0,0,0);}to{transform:rotate(-7deg) translate3d(0,-22px,0);}}
+  @keyframes floatB{from{transform:rotate(8deg) translate3d(0,0,0);}to{transform:rotate(6deg) translate3d(0,18px,0);}}
+  @keyframes floatC{from{transform:rotate(-6deg) translate3d(0,0,0);}to{transform:rotate(-3deg) translate3d(0,-14px,0);}}
+
+  /* Scroll cue: centred properly, then steps aside once you start reading */
+  .scroll-cue{animation:cueIn .6s ease-out both;animation-delay:1.9s;}
+  @keyframes cueIn{
+    from{opacity:0;transform:translate(-50%,16px);}
+    to{opacity:1;transform:translate(-50%,0);}
+  }
+  .scroll-cue.cue-ready{
+    animation:none;opacity:1;transform:translate(-50%,0);
+    transition:opacity .45s ease, transform .45s ease;
+  }
+  body.is-scrolled .scroll-cue.cue-ready{opacity:0;transform:translate(-50%,14px);pointer-events:none;}
+
+  /* Headings wipe up from a mask as they arrive */
+  .reveal-head{
+    clip-path:inset(0 -8% 108% -8%);opacity:0;transform:translateY(14px);
+    transition:clip-path .9s cubic-bezier(.2,.8,.2,1), transform .9s cubic-bezier(.2,.8,.2,1), opacity .6s ease;
+  }
+  .reveal-head.is-in{clip-path:inset(-25% -8% -25% -8%);opacity:1;transform:none;}
+
+  /* Stats: the rule above each figure draws across as the number counts */
+  .stat-item{position:relative;}
+  .stat-item + .stat-item::after{
+    content:"";position:absolute;top:-1px;left:0;height:2px;width:0;
+    background:var(--orange);transition:width 1.2s cubic-bezier(.2,.8,.2,1);
+  }
+  .stat-item + .stat-item.is-on::after{width:100%;}
+
+  /* The route: a rail down the three steps, lighting each one as it's reached */
+  .steps{position:relative;padding-left:56px;}
+  .rail{
+    position:absolute;left:17px;top:0;bottom:0;width:2px;
+    background:rgba(255,255,255,0.12);border-radius:2px;
+  }
+  .rail-fill{
+    position:absolute;left:0;top:0;width:100%;height:0;border-radius:2px;
+    background:linear-gradient(180deg,var(--leaf-bright),var(--orange));
+  }
+  .pip{
+    position:absolute;left:50%;top:0;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;
+    border-radius:50%;background:var(--cream);opacity:0;
+    box-shadow:0 0 0 5px rgba(242,153,74,0.18), 0 0 20px rgba(242,153,74,0.6);
+    transition:opacity .4s ease;
+  }
+  .steps.rail-live .pip{opacity:1;}
+  .step{position:relative;}
+  .node{
+    position:absolute;left:-38px;top:50%;width:13px;height:13px;margin-top:-6.5px;
+    transform:translateX(-50%);border-radius:50%;
+    background:var(--bg-deep-2);border:2px solid rgba(255,255,255,0.22);
+    transition:background .45s ease, border-color .45s ease, box-shadow .45s ease, transform .45s cubic-bezier(.2,.8,.2,1);
+  }
+  .step.is-on .node{
+    background:var(--leaf-bright);border-color:var(--leaf-bright);
+    box-shadow:0 0 0 6px rgba(139,195,74,0.14);transform:translateX(-50%) scale(1.15);
+  }
+  .step-media{overflow:hidden;border-radius:16px;}
+  .step-media img{transition:transform .9s cubic-bezier(.2,.8,.2,1), filter .9s ease;}
+  .step:hover .step-media img{transform:scale(1.04);}
+  .steps.rail-live .step-media img{filter:saturate(0.5) brightness(0.72);}
+  .steps.rail-live .step.is-on .step-media img{filter:none;}
+  .steps.rail-live .step-index{color:rgba(242,239,226,0.42);transition:color .5s ease;}
+  .steps.rail-live .step.is-on .step-index{color:var(--leaf-bright);}
+
+  /* Collage: tiles settle into place, then drift with the pointer */
+  .tile{
+    opacity:0;--py:26px;--sc:0.94;
+    transform:rotate(var(--rot,0deg)) translate3d(var(--px,0px),var(--py,0px),0) scale(var(--sc,1));
+    transition:transform .85s cubic-bezier(.2,.8,.2,1), opacity .7s ease, box-shadow .35s ease;
+  }
+  .t1{--rot:-2deg;} .t2{--rot:1.5deg;} .t3{--rot:-1deg;} .t4{--rot:2deg;}
+  .t5{--rot:-1.5deg;} .t6{--rot:1deg;} .t7{--rot:-2deg;} .t8{--rot:1.5deg;}
+  .collage.is-in .tile{opacity:1;--py:0px;--sc:1;}
+  .collage.tiles-ready .tile{transition:transform .35s cubic-bezier(.2,.8,.2,1), opacity .4s ease, box-shadow .35s ease;}
+  .tile img{transition:transform .9s cubic-bezier(.2,.8,.2,1);}
+  .collage.tiles-ready .tile:hover{z-index:2;box-shadow:0 30px 50px -22px rgba(0,0,0,0.7);}
+  .collage.tiles-ready .tile:hover img{transform:scale(1.06);}
+
+  /* Interaction states */
+  nav.links a{position:relative;padding-bottom:5px;}
+  nav.links a::after{
+    content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--leaf-bright);
+    transform:scaleX(0);transform-origin:right;transition:transform .35s cubic-bezier(.2,.8,.2,1);
+  }
+  nav.links a:hover::after{transform:scaleX(1);transform-origin:left;}
+  .btn{position:relative;overflow:hidden;}
+  .btn:hover:not(:active){transform:translateY(-2px);}
+  .btn-primary{box-shadow:0 10px 24px -14px rgba(242,153,74,0.9);}
+  .btn-primary::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(110deg,transparent 32%,rgba(255,255,255,0.45) 50%,transparent 68%);
+    transform:translateX(-130%);transition:transform .75s ease;
+  }
+  .btn-primary:hover::after{transform:translateX(130%);}
+  .footer-col a{transition:color .2s ease, transform .25s ease;}
+  .footer-col a:hover{transform:translateX(3px);}
+  a:focus-visible,button:focus-visible,input:focus-visible{
+    outline:2px solid var(--leaf-bright);outline-offset:3px;border-radius:8px;
+  }
+
+  /* Waitlist: the form hands off to a confirmation */
+  form.waitlist{transition:opacity .28s ease, transform .28s ease;}
+  form.waitlist.hide{opacity:0;transform:translateY(-6px);}
+  form.waitlist input[type="email"]:focus{box-shadow:0 0 0 4px rgba(139,195,74,0.14);}
+  .waitlist-success{align-items:center;justify-content:center;gap:10px;}
+  .waitlist-success.show{display:flex;animation:successIn .5s cubic-bezier(.2,.8,.2,1) both;}
+  .waitlist-success .check{
+    width:26px;height:26px;flex:none;fill:none;stroke:var(--leaf-bright);
+    stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+  }
+  .waitlist-success .check circle{stroke-dasharray:64;stroke-dashoffset:64;opacity:.45;animation:draw .6s ease forwards .05s;}
+  .waitlist-success .check path{stroke-dasharray:22;stroke-dashoffset:22;animation:draw .4s ease forwards .45s;}
+  @keyframes draw{to{stroke-dashoffset:0;}}
+  @keyframes successIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+  @media (max-width:860px){
+    .steps{padding-left:34px;}
+    .rail{left:9px;}
+    .node{left:-25px;}
+    .t1,.t2,.t3,.t4,.t5,.t6,.t7,.t8{--rot:0deg;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .scroll-progress{display:none;}
+    .hero::before,.hbg-1,.hbg-2,.hbg-3,.scroll-cue{animation:none;}
+    .hbg-1{transform:rotate(-9deg);} .hbg-2{transform:rotate(8deg);} .hbg-3{transform:rotate(-6deg);}
+    .scroll-cue{opacity:1 !important;transform:translate(-50%,0) !important;}
+    .reveal-head{clip-path:none;opacity:1;transform:none;transition:none;}
+    .stat-item + .stat-item::after{display:none;}
+    .tile{opacity:1;--py:0px;--sc:1;transition:none;}
+    .pip{display:none;}
+    .steps.rail-live .step-media img{filter:none;}
+    .steps.rail-live .step-index{color:var(--leaf-bright);}
+    .step:hover .step-media img,.collage.tiles-ready .tile:hover img{transform:none;}
+    .btn:hover:not(:active){transform:none;}
+    .btn-primary::after{display:none;}
+    .waitlist-success.show{animation:none;}
+    .waitlist-success .check circle,.waitlist-success .check path{animation:none;stroke-dashoffset:0;}
+  }
+</style>
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+<header class="site-nav" id="siteNav">
+  <div class="wrap nav-row">
+    <a href="#top" class="brand">
+      <img src="logo-icon.webp" alt="">
+      <span>ecobite</span>
+    </a>
+    <nav class="links">
+      <a href="#how">How it works</a>
+      <a href="#impact">Impact</a>
+      <a href="#network">Who it's for</a>
+      <a href="signin.html">Sign in</a>
+    </nav>
+    <a href="signup.html" class="btn btn-primary">Sign up</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg-photos" aria-hidden="true">
+      <img class="hbg-1" src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=500&q=70" alt="" loading="lazy">
+      <img class="hbg-2" src="https://images.unsplash.com/photo-1599059813005-11265ba4b4ce?auto=format&fit=crop&w=480&q=70" alt="" loading="lazy">
+      <img class="hbg-3" src="https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=400&q=70" alt="" loading="lazy">
+    </div>
+    <div class="wrap hero-inner">
+      <div class="hero-mark">
+        <div class="logo-icon-wrap">
+          <img src="logo-icon.webp" alt="EcoBite">
+        </div>
+        <div class="logo-wordmark">
+          <img src="logo-wordmark.webp" alt="EcoBite">
+        </div>
+      </div>
+      <h1>Good food shouldn't end up in the bin.</h1>
+      <p class="lede">EcoBite predicts surplus before it happens, matches it to the people and organizations who need it, and gets it moving while it's still good to eat.</p>
+      <div class="cta-row">
+        <a href="#how" class="btn btn-primary">See how it works</a>
+        <a href="signup.html" class="btn btn-outline">Create an account</a>
+      </div>
+    </div>
+    <div class="scroll-cue">
+      <span>Scroll</span>
+      <div class="chev"></div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats" id="impact">
+    <div class="wrap">
+      <h2 class="reveal-head">Every year, good food goes to waste before it ever reaches a plate.</h2>
+      <div class="stats-grid">
+        <div class="stat-photo">
+          <img src="https://images.unsplash.com/photo-1644575881028-9f170fd241ed?auto=format&fit=crop&w=900&q=80" alt="Crate of discarded fresh vegetables" loading="lazy">
+          <div class="caption">This was still edible.</div>
+        </div>
+        <div class="stat-list">
+          <div class="stat-item">
+            <span class="stat-number" data-count="1.05" data-suffix="B" data-decimals="2">0<span class="unit">tonnes wasted globally in 2022</span></span>
+            <p>Nearly a fifth of all food available to consumers is thrown away at the retail, food-service, and household level each year.</p>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" data-count="1" data-suffix="B" data-decimals="0">0<span class="unit">meals wasted by households, daily</span></span>
+            <p>That's the conservative estimate for edible food discarded in homes alone, every single day, worldwide.</p>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" data-count="783" data-suffix="M" data-decimals="0">0<span class="unit">people faced hunger the same year</span></span>
+            <p>The waste isn't happening because there isn't enough food. It's a matching and logistics problem — which is exactly what EcoBite is built to solve.</p>
+          </div>
+        </div>
+      </div>
+      <p class="stat-source">Source: UNEP Food Waste Index Report 2024.</p>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how" id="how">
+    <div class="wrap">
+      <div class="how-head">
+        <h2 class="reveal-head">Three steps, moving in real time</h2>
+        <p>EcoBite runs continuously in the background of a restaurant, grocer, or kitchen's normal operations — no extra work required to take part.</p>
+      </div>
+
+      <div class="steps" id="steps">
+        <div class="rail" aria-hidden="true"><span class="rail-fill"></span><span class="pip"></span></div>
+
+      <div class="step">
+        <div class="step-media">
+          <img src="https://images.unsplash.com/photo-1556911220-dabc1f02913a?auto=format&fit=crop&w=900&q=80" alt="Restaurant kitchen preparing food" loading="lazy">
+        </div>
+        <div class="step-text">
+          <i class="node" aria-hidden="true"></i>
+          <span class="step-index">01 — Predict</span>
+          <h3>Forecasting surplus before it's thrown out</h3>
+          <p>Models trained on sales patterns, expiry windows, and delivery schedules flag surplus at restaurants, grocers, and farms hours or days before it would otherwise go to waste.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-media">
+          <img src="https://images.unsplash.com/photo-1599059813005-11265ba4b4ce?auto=format&fit=crop&w=900&q=80" alt="Volunteers coordinating a food handoff" loading="lazy">
+        </div>
+        <div class="step-text">
+          <i class="node" aria-hidden="true"></i>
+          <span class="step-index">02 — Connect</span>
+          <h3>Matching surplus to real need, instantly</h3>
+          <p>The moment surplus is flagged, EcoBite matches it with nearby shelters, food banks, and community fridges based on what they need, how much they can store, and how close they are.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-media">
+          <img src="https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=900&q=80" alt="Volunteer driver loading food for delivery" loading="lazy">
+        </div>
+        <div class="step-text">
+          <i class="node" aria-hidden="true"></i>
+          <span class="step-index">03 — Redistribute</span>
+          <h3>Getting it there while it still matters</h3>
+          <p>Optimized pickup and delivery routes get volunteers and drivers moving fast, with every handoff tracked from donor to recipient so nothing gets lost in between.</p>
+        </div>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NETWORK / COLLAGE -->
+  <section class="network" id="network">
+    <div class="wrap">
+      <div class="network-head">
+        <h2 class="reveal-head">Built for everyone in the chain</h2>
+        <p>Restaurants and grocers with surplus, volunteers who move it, and community organizations who distribute it — all coordinated on one platform.</p>
+      </div>
+      <div class="collage">
+        <div class="tile t1"><img src="https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=700&q=75" alt="Farmers market with fresh produce" loading="lazy"><span class="tag">Donors</span></div>
+        <div class="tile t2"><img src="https://images.unsplash.com/photo-1593113616828-6f22bca04804?auto=format&fit=crop&w=700&q=75" alt="Volunteers packing food boxes" loading="lazy"></div>
+        <div class="tile t3"><img src="https://images.unsplash.com/photo-1562709902-31c9a3b1ad5c?auto=format&fit=crop&w=700&q=75" alt="Community kitchen serving a meal" loading="lazy"><span class="tag">Recipients</span></div>
+        <div class="tile t4"><img src="https://images.unsplash.com/photo-1608686207856-001b95cf60ca?auto=format&fit=crop&w=500&q=75" alt="Delivery rider" loading="lazy"></div>
+        <div class="tile t5"><img src="https://images.unsplash.com/photo-1550989460-0adf9ea622e2?auto=format&fit=crop&w=500&q=75" alt="Fresh vegetables" loading="lazy"></div>
+        <div class="tile t6"><img src="https://images.unsplash.com/photo-1516594798947-e65505dbb29d?auto=format&fit=crop&w=700&q=75" alt="Shelves at a food bank" loading="lazy"><span class="tag">Storage</span></div>
+        <div class="tile t7"><img src="https://images.unsplash.com/photo-1597362925123-77861d3fbac7?auto=format&fit=crop&w=700&q=75" alt="Grocery store produce section" loading="lazy"></div>
+        <div class="tile t8"><img src="https://images.unsplash.com/photo-1593113646773-028c64a8f1b8?auto=format&fit=crop&w=700&q=75" alt="Volunteers working together" loading="lazy"><span class="tag">Volunteers</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-band" id="join">
+    <div class="wrap">
+      <h2 class="reveal-head">Help us get surplus food where it's needed.</h2>
+      <p>We're onboarding restaurants, grocers, and community organizations city by city. Sign up and we'll reach out when EcoBite is ready near you.</p>
+      <form class="waitlist" id="waitlistForm">
+        <label for="email" class="visually-hidden">Email address</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required>
+        <button type="submit" class="btn btn-dark">Sign up</button>
+      </form>
+      <p class="waitlist-note">No spam — just a note when we launch in your city. Already ready? <a href="signup.html">Create an account</a>.</p>
+      <p class="waitlist-success" id="waitlistSuccess"><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M7.4 12.4l3.1 3.1 6.1-6.6"/></svg><span>You're on the list. We'll be in touch soon.</span></p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#top" class="brand">
+          <img src="logo-icon.webp" alt="">
+          <span>ecobite</span>
+        </a>
+        <p>An AI-powered ecosystem that predicts food waste and redistributes surplus before it's too late.</p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="#how">How it works</a>
+          <a href="#impact">Impact</a>
+          <a href="#network">Who it's for</a>
+        </div>
+        <div class="footer-col">
+          <h4>Get involved</h4>
+          <a href="signup.html">Create an account</a>
+          <a href="signin.html">Sign in</a>
+          <a href="home.html">Dashboard</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 EcoBite. Concept preview — not a live service.</span>
+      <span>Photography via Unsplash contributors, for concept preview purposes.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Nav background on scroll
+  const nav = document.getElementById('siteNav');
+  const onScroll = () => {
+    if(window.scrollY > 40){ nav.classList.add('scrolled'); }
+    else{ nav.classList.remove('scrolled'); }
+  };
+  document.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Count-up stats
+  const statEls = document.querySelectorAll('.stat-number');
+  const animateCount = (el) => {
+    const target = parseFloat(el.dataset.count);
+    const decimals = parseInt(el.dataset.decimals || '0', 10);
+    const suffix = el.dataset.suffix || '';
+    const unitEl = el.querySelector('.unit');
+    const duration = 1200;
+    const start = performance.now();
+    const step = (now) => {
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      const val = target * eased;
+      el.firstChild.nodeValue = val.toFixed(decimals) + suffix + ' ';
+      if(unitEl) el.appendChild(unitEl); // keep unit span attached after text update
+      if(p < 1){ requestAnimationFrame(step); }
+    };
+    if(reduceMotion){
+      el.firstChild.nodeValue = target.toFixed(decimals) + suffix + ' ';
+      if(unitEl) el.appendChild(unitEl);
+    } else {
+      requestAnimationFrame(step);
+    }
+  };
+
+  const statObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        animateCount(entry.target);
+        statObserver.unobserve(entry.target);
+      }
+    });
+  }, {threshold:0.5});
+  statEls.forEach(el => statObserver.observe(el));
+
+  // Collage tiles settle into place, then drift with the pointer
+  const collage = document.querySelector('.collage');
+  const tiles = collage ? Array.from(collage.querySelectorAll('.tile')) : [];
+
+  const enableTileParallax = () => {
+    if(!collage || reduceMotion || !window.matchMedia('(pointer: fine)').matches) return;
+    collage.addEventListener('mousemove', (e) => {
+      const rect = collage.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      tiles.forEach((tile, i) => {
+        const depth = (i % 3 + 1) * 4;
+        tile.style.setProperty('--px', (x * depth).toFixed(2) + 'px');
+        tile.style.setProperty('--py', (y * depth).toFixed(2) + 'px');
+      });
+    });
+    collage.addEventListener('mouseleave', () => {
+      tiles.forEach(tile => {
+        tile.style.setProperty('--px', '0px');
+        tile.style.setProperty('--py', '0px');
+      });
+    });
+  };
+
+  // Waitlist form (demo only, no backend)
+  const form = document.getElementById('waitlistForm');
+  const success = document.getElementById('waitlistSuccess');
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    form.classList.add('hide');
+    window.setTimeout(() => {
+      form.style.display = 'none';
+      success.classList.add('show');
+    }, reduceMotion ? 0 : 280);
+  });
+
+  // One-shot reveals
+  const revealOnce = (cls, options) => new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+      if(!entry.isIntersecting) return;
+      entry.target.classList.add(cls);
+      obs.unobserve(entry.target);
+    });
+  }, options);
+
+  const canObserve = 'IntersectionObserver' in window;
+
+  if(canObserve){
+    const headings = revealOnce('is-in', {threshold: 0.25});
+    document.querySelectorAll('.reveal-head').forEach(el => headings.observe(el));
+
+    const statRules = revealOnce('is-on', {threshold: 0.45});
+    document.querySelectorAll('.stat-item').forEach(el => statRules.observe(el));
+  } else {
+    document.querySelectorAll('.reveal-head').forEach(el => el.classList.add('is-in'));
+    document.querySelectorAll('.stat-item').forEach(el => el.classList.add('is-on'));
+  }
+
+  if(collage){
+    if(reduceMotion || !canObserve){
+      collage.classList.add('is-in', 'tiles-ready');
+    } else {
+      const collageIn = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+          if(!entry.isIntersecting) return;
+          obs.unobserve(entry.target);
+          tiles.forEach((tile, i) => { tile.style.transitionDelay = (i * 70) + 'ms'; });
+          collage.classList.add('is-in');
+          window.setTimeout(() => {
+            tiles.forEach(tile => { tile.style.transitionDelay = ''; });
+            collage.classList.add('tiles-ready');
+            enableTileParallax();
+          }, tiles.length * 70 + 900);
+        });
+      }, {threshold: 0.15});
+      collageIn.observe(collage);
+    }
+  }
+
+  // The scroll cue steps aside once you start reading
+  const cue = document.querySelector('.scroll-cue');
+  if(cue) window.setTimeout(() => cue.classList.add('cue-ready'), reduceMotion ? 0 : 2600);
+
+  // Scroll-linked: reading progress, hero parallax, and the delivery rail
+  const progress = document.getElementById('scrollProgress');
+  const heroPhotos = document.querySelector('.hero-bg-photos');
+  const steps = document.getElementById('steps');
+  const railFill = steps ? steps.querySelector('.rail-fill') : null;
+  const pip = steps ? steps.querySelector('.pip') : null;
+  const stepEls = steps ? Array.from(steps.querySelectorAll('.step')) : [];
+  let queued = false;
+
+  const onFrame = () => {
+    queued = false;
+    const y = window.scrollY || window.pageYOffset || 0;
+
+    document.body.classList.toggle('is-scrolled', y > 60);
+
+    if(progress){
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      progress.style.transform = 'scaleX(' + (scrollable > 0 ? Math.min(y / scrollable, 1) : 0) + ')';
+    }
+
+    if(heroPhotos && !reduceMotion && y < window.innerHeight * 1.3){
+      heroPhotos.style.setProperty('--hero-par', (y * 0.14).toFixed(1) + 'px');
+    }
+
+    if(steps && railFill){
+      const rect = steps.getBoundingClientRect();
+      const anchor = window.innerHeight * 0.62;
+      let travelled = (anchor - rect.top) / rect.height;
+      travelled = Math.max(0, Math.min(1, travelled));
+      railFill.style.height = (travelled * 100) + '%';
+      if(pip) pip.style.top = (travelled * 100) + '%';
+      steps.classList.toggle('rail-live', travelled > 0.02 && travelled < 0.99);
+      const reached = travelled * rect.height;
+      stepEls.forEach(step => {
+        step.classList.toggle('is-on', (step.offsetTop + step.offsetHeight * 0.45) <= reached);
+      });
+    }
+  };
+
+  const queueFrame = () => {
+    if(queued) return;
+    queued = true;
+    requestAnimationFrame(onFrame);
+  };
+
+  document.addEventListener('scroll', queueFrame, {passive: true});
+  window.addEventListener('resize', queueFrame);
+  queueFrame();
+</script>
+
+</body>
+</html>
