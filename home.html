@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your dashboard — EcoBite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="app.css">
+<style>
+  /* ---------- Greeting ---------- */
+  .greeting{padding:44px 0 30px;display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;}
+  .greeting h1{font-size:clamp(1.9rem,3.6vw,2.6rem);margin-bottom:10px;}
+  .greeting .meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;color:var(--text-soft);font-size:0.92rem;}
+
+  /* ---------- Impact strip ---------- */
+  .impact{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+    background:var(--panel-line);border:1px solid var(--panel-line);
+    border-radius:var(--r-lg);overflow:hidden;margin-bottom:34px;
+  }
+  .impact div{background:var(--bg-deep-2);padding:22px 24px;}
+  .impact .n{
+    font-family:'Fraunces',serif;font-weight:600;font-size:clamp(1.5rem,2.6vw,2rem);
+    line-height:1.1;display:block;
+  }
+  .impact .n small{font-size:0.52em;font-weight:500;font-family:'Inter',sans-serif;color:var(--text-soft);margin-left:5px;}
+  .impact .n.bump{animation:bump .5s var(--ease);}
+  @keyframes bump{0%{transform:translateY(0);}35%{transform:translateY(-5px);}100%{transform:translateY(0);}}
+  .impact label{display:block;font-size:0.84rem;color:var(--text-faint);margin-top:6px;}
+
+  /* ---------- Layout ---------- */
+  .board{display:grid;grid-template-columns:1.6fr 1fr;gap:26px;align-items:start;}
+  .col{display:grid;gap:26px;}
+
+  /* ---------- Tabs ---------- */
+  .tabs{display:flex;gap:7px;flex-wrap:wrap;}
+  .tab{
+    padding:7px 15px;border-radius:100px;font-size:0.84rem;font-weight:500;cursor:pointer;
+    background:transparent;border:1px solid var(--line-dark);color:var(--text-soft);
+    font-family:'Inter',sans-serif;transition:all .22s ease;
+  }
+  .tab:hover{color:var(--cream);border-color:rgba(242,239,226,0.4);}
+  .tab.on{background:rgba(139,195,74,0.15);border-color:var(--leaf-bright);color:var(--leaf-bright);}
+
+  /* ---------- Surplus list ---------- */
+  .surplus{display:grid;gap:2px;}
+  .item{
+    display:grid;grid-template-columns:auto 1fr auto auto;gap:18px;align-items:center;
+    padding:18px 4px;border-top:1px solid var(--panel-line);
+    transition:opacity .35s ease, transform .35s var(--ease), background .3s ease;
+  }
+  .item:first-child{border-top:none;}
+  .item.hidden{display:none;}
+  .item .kind{
+    width:42px;height:42px;border-radius:13px;flex:none;display:grid;place-items:center;
+    background:rgba(255,255,255,0.05);border:1px solid var(--panel-line);
+  }
+  .item .kind svg{width:20px;height:20px;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;}
+  .kind[data-k="prepared"]{background:rgba(242,153,74,0.11);border-color:rgba(242,153,74,0.22);}
+  .kind[data-k="prepared"] svg{stroke:var(--orange);}
+  .kind[data-k="produce"]{background:rgba(139,195,74,0.11);border-color:rgba(139,195,74,0.22);}
+  .kind[data-k="produce"] svg{stroke:var(--leaf-bright);}
+  .kind[data-k="bakery"]{background:rgba(234,229,210,0.09);border-color:rgba(234,229,210,0.2);}
+  .kind[data-k="bakery"] svg{stroke:var(--cream-2);}
+  .kind[data-k="chilled"]{background:rgba(99,185,166,0.12);border-color:rgba(99,185,166,0.24);}
+  .kind[data-k="chilled"] svg{stroke:#63B9A6;}
+  .item h3{font-size:0.98rem;margin-bottom:3px;}
+  .item .where{font-size:0.84rem;color:var(--text-faint);}
+  .item .qty{font-size:0.88rem;color:var(--text-soft);text-align:right;white-space:nowrap;}
+  .item .qty b{display:block;color:var(--cream);font-weight:600;font-size:0.94rem;}
+  .countdown{
+    display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:100px;
+    font-size:0.82rem;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;
+    background:rgba(255,255,255,0.07);color:var(--text-soft);transition:background .4s ease,color .4s ease;
+  }
+  .countdown::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;}
+  .countdown.warm{background:rgba(242,153,74,0.16);color:var(--orange);}
+  .countdown.urgent{background:rgba(225,87,63,0.18);color:#F3A594;animation:urgent 2.2s ease-in-out infinite;}
+  .item .act{display:flex;align-items:center;gap:12px;justify-content:flex-end;}
+  .item.claimed{background:rgba(139,195,74,0.06);}
+  .item.claimed h3{color:var(--text-soft);}
+  .claimed-tag{display:none;align-items:center;gap:8px;font-size:0.84rem;color:var(--leaf-bright);font-weight:600;}
+  .item.claimed .claimed-tag{display:inline-flex;animation:fadeSlide .35s ease both;}
+  .item.claimed .countdown,.item.claimed .btn{display:none;}
+  .claimed-tag svg{width:17px;height:17px;fill:none;stroke:var(--leaf-bright);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+  .empty-note{display:none;padding:26px 4px;color:var(--text-faint);font-size:0.9rem;}
+  .empty-note.show{display:block;}
+
+  /* ---------- Runs ---------- */
+  .runs{display:grid;gap:16px;}
+  .run{padding:18px 20px;border-radius:var(--r-md);background:rgba(255,255,255,0.035);border:1px solid var(--panel-line);}
+  .run-top{display:flex;justify-content:space-between;align-items:baseline;gap:14px;margin-bottom:6px;flex-wrap:wrap;}
+  .run-top h3{font-size:0.96rem;}
+  .run-top .eta{font-size:0.84rem;color:var(--orange);font-weight:600;font-variant-numeric:tabular-nums;}
+  .run .path{font-size:0.86rem;color:var(--text-faint);margin-bottom:16px;}
+  .run .route{margin-bottom:9px;}
+  .run-legend{display:flex;justify-content:space-between;font-size:0.76rem;color:var(--text-faint);}
+  .run-legend span.on{color:var(--leaf-bright);}
+
+  /* ---------- Week chart ---------- */
+  .chart{display:flex;align-items:flex-end;gap:10px;height:132px;margin:8px 0 12px;}
+  .chart .bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%;}
+  .chart .bar i{
+    display:block;width:100%;height:0;border-radius:6px 6px 3px 3px;
+    background:linear-gradient(180deg,var(--leaf-bright),rgba(79,154,82,0.55));
+    transition:height 1s var(--ease);
+  }
+  .chart .bar.today i{background:linear-gradient(180deg,var(--orange),rgba(217,120,46,0.6));}
+  .chart-days{display:flex;gap:10px;font-size:0.74rem;color:var(--text-faint);}
+  .chart-days span{flex:1;text-align:center;}
+  .chart-days span.today{color:var(--orange);font-weight:600;}
+
+  /* ---------- Need list ---------- */
+  .need{display:grid;gap:2px;}
+  .need li{padding:15px 0;border-top:1px solid var(--panel-line);}
+  .need li:first-child{border-top:none;}
+  .need-top{display:flex;justify-content:space-between;gap:12px;align-items:baseline;margin-bottom:4px;}
+  .need-top strong{font-size:0.93rem;font-weight:600;}
+  .need-top span{font-size:0.8rem;color:var(--text-faint);font-variant-numeric:tabular-nums;}
+  .need .what{font-size:0.82rem;color:var(--text-faint);margin-bottom:9px;}
+  .meter{height:5px;border-radius:5px;background:rgba(255,255,255,0.09);overflow:hidden;}
+  .meter i{display:block;height:100%;width:0;border-radius:5px;background:var(--leaf-bright);transition:width 1.1s var(--ease);}
+  .meter i.high{background:var(--orange);}
+  .meter i.full{background:var(--tomato);}
+
+  @media (max-width:980px){
+    .board{grid-template-columns:1fr;}
+    .impact{grid-template-columns:repeat(2,1fr);}
+  }
+  @media (max-width:620px){
+    .item{grid-template-columns:auto 1fr;row-gap:12px;}
+    .item .qty{grid-column:2;text-align:left;}
+    .item .act{grid-column:1 / -1;justify-content:space-between;}
+    .greeting{padding:30px 0 22px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .countdown.urgent{animation:none;}
+    .impact .n.bump{animation:none;}
+    .chart .bar i,.meter i,.route-seg i{transition:none;}
+  }
+</style>
+</head>
+<body>
+
+<header class="site-nav" id="siteNav">
+  <div class="wrap nav-row">
+    <a href="index.html" class="brand">
+      <img src="logo-icon.webp" alt="">
+      <span>ecobite</span>
+    </a>
+    <nav class="nav-links">
+      <a href="home.html" aria-current="page">Dashboard</a>
+      <a href="#surplus">Surplus</a>
+      <a href="#runs">Pickups</a>
+      <a href="index.html#how">How it works</a>
+    </nav>
+    <div class="nav-end">
+      <a href="#" class="account">
+        <span class="avatar" id="avatar">P</span>
+        <span class="who"><span id="whoName">Priya Menon</span><small id="whoRole">Eastside Community Fridge</small></span>
+      </a>
+      <a href="index.html" class="btn btn-ghost btn-sm">Sign out</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <section class="greeting">
+      <div>
+        <h1 id="hello">Good morning, Priya.</h1>
+        <div class="meta">
+          <span class="pill pill-leaf" id="rolePill">Distributing organisation</span>
+          <span id="todayLine">6 items flagged nearby in the last hour.</span>
+        </div>
+      </div>
+      <a href="#surplus" class="btn btn-primary" id="mainAction">See what's available</a>
+    </section>
+
+    <section class="impact rise" aria-label="Your impact">
+      <div><span class="n" id="statMeals" data-to="2480">0</span><label>Meals rescued this month</label></div>
+      <div><span class="n" data-to="1140">0<small>kg</small></span><label>Food diverted from waste</label></div>
+      <div><span class="n" data-to="3.2" data-dec="1">0<small>t</small></span><label>CO₂e avoided</label></div>
+      <div><span class="n" data-to="37">0</span><label>Partners active near you</label></div>
+    </section>
+
+    <div class="board">
+
+      <div class="col">
+        <!-- SURPLUS -->
+        <section class="panel rise" id="surplus">
+          <div class="panel-head">
+            <div>
+              <h2 id="surplusTitle">Surplus flagged nearby</h2>
+              <p class="hint">Sorted by how soon it stops being good to eat.</p>
+            </div>
+            <div class="tabs" id="tabs">
+              <button class="tab on" data-filter="all">All</button>
+              <button class="tab" data-filter="prepared">Prepared</button>
+              <button class="tab" data-filter="produce">Produce</button>
+              <button class="tab" data-filter="bakery">Bakery</button>
+              <button class="tab" data-filter="chilled">Chilled</button>
+            </div>
+          </div>
+
+          <div class="surplus" id="surplusList"></div>
+          <p class="empty-note" id="emptyNote">Nothing in that category right now. Try another filter.</p>
+        </section>
+
+        <!-- RUNS -->
+        <section class="panel rise" id="runs">
+          <div class="panel-head">
+            <div>
+              <h2>Pickups in motion</h2>
+              <p class="hint">Every handoff, from collection to the door.</p>
+            </div>
+            <span class="pill pill-orange">3 running</span>
+          </div>
+          <div class="runs" id="runList"></div>
+        </section>
+      </div>
+
+      <div class="col">
+        <!-- WEEK -->
+        <section class="panel rise">
+          <div class="panel-head">
+            <h2>This week</h2>
+            <span class="hint">meals rescued</span>
+          </div>
+          <div class="chart" id="chart"></div>
+          <div class="chart-days" id="chartDays"></div>
+          <p class="hint" style="margin-top:14px;">Thursday is your strongest day — most restaurant surplus lands the night before.</p>
+        </section>
+
+        <!-- NEED -->
+        <section class="panel rise">
+          <div class="panel-head">
+            <div>
+              <h2>Where there's room</h2>
+              <p class="hint">Storage filling up nearby.</p>
+            </div>
+          </div>
+          <ul class="need" id="needList"></ul>
+        </section>
+
+        <!-- NEXT WINDOW -->
+        <section class="panel rise">
+          <div class="panel-head"><h2>Your next window</h2></div>
+          <p style="font-family:'Fraunces',serif;font-size:1.5rem;line-height:1.2;margin-bottom:8px;">Today, 5:30 – 8:00 pm</p>
+          <p class="hint" style="margin-bottom:18px;">Most kitchens close their counters in this window, so it's the busiest stretch for new offers.</p>
+          <button class="btn btn-ghost btn-sm">Change availability</button>
+        </section>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap foot-row">
+    <span>© 2026 EcoBite. Concept preview — figures shown are illustrative.</span>
+    <div class="foot-links">
+      <a href="index.html">Home</a>
+      <a href="signup.html">Sign up</a>
+      <a href="signin.html">Sign in</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const nav = document.getElementById('siteNav');
+  document.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 10);
+  }, {passive:true});
+
+  /* ============ Who's signed in (carried over from sign-up) ============ */
+  const ROLE_COPY = {
+    donor:  {pill:'Food donor', org:'Rosa\u2019s Kitchen', title:'Surplus you\u2019ve flagged', verb:'Confirm', done:'Confirmed',
+             line:'3 items are waiting on your confirmation.', action:'Flag surplus'},
+    org:    {pill:'Distributing organisation', org:'Eastside Community Fridge', title:'Surplus flagged nearby', verb:'Claim', done:'Claimed',
+             line:'6 items flagged nearby in the last hour.', action:'Update capacity'},
+    driver: {pill:'Volunteer driver', org:'On call today', title:'Runs you can take', verb:'Take run', done:'On your list',
+             line:'4 runs are open in your area right now.', action:'Set availability'}
+  };
+
+  let who = {name:'Priya Menon', role:'org'};
+  try{
+    const savedName = sessionStorage.getItem('ecobite-name');
+    const savedRole = sessionStorage.getItem('ecobite-role');
+    if(savedName) who.name = savedName;
+    if(savedRole && ROLE_COPY[savedRole]) who.role = savedRole;
+  }catch(err){ /* private mode — defaults are fine */ }
+
+  const copy = ROLE_COPY[who.role];
+  const first = who.name.split(' ')[0];
+  const hour = new Date().getHours();
+  const partOfDay = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+
+  document.getElementById('hello').textContent = partOfDay + ', ' + first + '.';
+  document.getElementById('whoName').textContent = who.name;
+  document.getElementById('whoRole').textContent = copy.org;
+  document.getElementById('avatar').textContent = first.charAt(0).toUpperCase();
+  document.getElementById('rolePill').textContent = copy.pill;
+  document.getElementById('todayLine').textContent = copy.line;
+  document.getElementById('surplusTitle').textContent = copy.title;
+  document.getElementById('mainAction').textContent = copy.action;
+
+  /* ============ Reveal on scroll ============ */
+  if('IntersectionObserver' in window && !reduceMotion){
+    const io = new IntersectionObserver((entries, obs) => {
+      entries.forEach(e => {
+        if(!e.isIntersecting) return;
+        e.target.classList.add('in');
+        obs.unobserve(e.target);
+      });
+    }, {threshold:0.12});
+    document.querySelectorAll('.rise').forEach(el => io.observe(el));
+  } else {
+    document.querySelectorAll('.rise').forEach(el => el.classList.add('in'));
+  }
+
+  /* ============ Impact figures ============ */
+  const countTo = (el) => {
+    const target = parseFloat(el.dataset.to);
+    const dec = parseInt(el.dataset.dec || '0', 10);
+    const small = el.querySelector('small');
+    const write = (v) => {
+      el.firstChild.nodeValue = v.toLocaleString('en-US', {minimumFractionDigits:dec, maximumFractionDigits:dec});
+      if(small) el.appendChild(small);
+    };
+    if(reduceMotion){ write(target); return; }
+    const start = performance.now(), dur = 1300;
+    const tick = (now) => {
+      const p = Math.min((now - start) / dur, 1);
+      write(target * (1 - Math.pow(1 - p, 3)));
+      if(p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+  document.querySelectorAll('.impact .n').forEach(countTo);
+
+  /* ============ Surplus ============ */
+  const GLYPH = {
+    prepared:'<path d="M3.5 11h17a8.5 8.5 0 0 1-17 0Z"/><path d="M12 8.2c0-1.6-1.6-2-1.6-3.6"/>',
+    produce:'<path d="M4 20c0-8 6-14 16-14 0 10-6 15-16 14Z"/><path d="M9 15.5c2-2.2 4.2-3.4 7.2-4.4"/>',
+    bakery:'<path d="M4 15.5a4 4 0 0 1 2-7.2L7 7h10l1 1.3a4 4 0 0 1 2 7.2V17a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-1.5Z"/><path d="M10 9.5 8.5 16M14 9.5 12.5 16"/>',
+    chilled:'<path d="M12 3v18M4.6 7.4l14.8 9.2M19.4 7.4 4.6 16.6"/>'
+  };
+
+  const ITEMS = [
+    {kind:'chilled',  name:'Sandwiches & salads', from:'Harbour Café · 1.9 km', qty:'18', unit:'portions', mins:35},
+    {kind:'produce',  name:'Mixed produce',       from:'Green Grocer Market · 2.4 km', qty:'22', unit:'kg', mins:65},
+    {kind:'prepared', name:'Cooked biryani',      from:'Rosa\u2019s Kitchen · 1.2 km', qty:'14', unit:'portions', mins:160},
+    {kind:'prepared', name:'Dal & rice',          from:'Sea View Hotel · 3.3 km', qty:'40', unit:'portions', mins:195},
+    {kind:'bakery',   name:'Loaves & pastries',   from:'Daily Bread Bakery · 0.8 km', qty:'30', unit:'items', mins:310},
+    {kind:'produce',  name:'Tomatoes',            from:'Coastal Farms · 6.1 km', qty:'60', unit:'kg', mins:570}
+  ];
+
+  const list = document.getElementById('surplusList');
+  const emptyNote = document.getElementById('emptyNote');
+
+  ITEMS.forEach((item, i) => {
+    const row = document.createElement('article');
+    row.className = 'item';
+    row.dataset.kind = item.kind;
+    row.dataset.deadline = Date.now() + item.mins * 60000;
+    row.innerHTML =
+      '<span class="kind" data-k="' + item.kind + '" aria-hidden="true"><svg viewBox="0 0 24 24">' + GLYPH[item.kind] + '</svg></span>' +
+      '<span><h3></h3><span class="where"></span></span>' +
+      '<span class="qty"><b></b><span class="u"></span></span>' +
+      '<span class="act">' +
+        '<span class="countdown"></span>' +
+        '<button class="btn btn-leaf btn-sm">' + copy.verb + '</button>' +
+        '<span class="claimed-tag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7"/></svg>' + copy.done + '</span>' +
+      '</span>';
+    row.querySelector('h3').textContent = item.name;
+    row.querySelector('.where').textContent = item.from;
+    row.querySelector('.qty b').textContent = item.qty;
+    row.querySelector('.qty .u').textContent = item.unit;
+    list.appendChild(row);
+
+    row.querySelector('button').addEventListener('click', () => {
+      row.classList.add('claimed');
+      const meals = document.getElementById('statMeals');
+      const added = parseInt(item.qty, 10);
+      const now = parseInt(meals.firstChild.nodeValue.replace(/,/g, ''), 10) + added;
+      meals.firstChild.nodeValue = now.toLocaleString('en-US');
+      meals.classList.remove('bump');
+      void meals.offsetWidth;
+      meals.classList.add('bump');
+    });
+  });
+
+  const fmt = (ms) => {
+    if(ms <= 0) return 'gone';
+    const total = Math.floor(ms / 1000);
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const s = total % 60;
+    return h > 0 ? h + 'h ' + String(m).padStart(2, '0') + 'm'
+                 : m + 'm ' + String(s).padStart(2, '0') + 's';
+  };
+
+  const tickClocks = () => {
+    document.querySelectorAll('.item').forEach(row => {
+      const left = Number(row.dataset.deadline) - Date.now();
+      const el = row.querySelector('.countdown');
+      el.textContent = fmt(left) + (left > 0 ? ' left' : '');
+      el.classList.toggle('urgent', left > 0 && left < 3600000);
+      el.classList.toggle('warm', left >= 3600000 && left < 10800000);
+    });
+  };
+  tickClocks();
+  window.setInterval(tickClocks, 1000);
+
+  document.getElementById('tabs').addEventListener('click', (e) => {
+    const tab = e.target.closest('.tab');
+    if(!tab) return;
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t === tab));
+    const want = tab.dataset.filter;
+    let shown = 0;
+    document.querySelectorAll('.item').forEach(row => {
+      const on = want === 'all' || row.dataset.kind === want;
+      row.classList.toggle('hidden', !on);
+      if(on) shown++;
+    });
+    emptyNote.classList.toggle('show', shown === 0);
+  });
+
+  /* ============ Runs in motion ============ */
+  const RUNS = [
+    {id:'418', driver:'Arun R.', path:'Green Grocer Market → Eastside Community Fridge', at:0.62, eta:12},
+    {id:'419', driver:'Meera P.', path:'Rosa\u2019s Kitchen → St. Anne\u2019s Shelter', at:0.28, eta:24},
+    {id:'417', driver:'Sanjay K.', path:'Daily Bread Bakery → Harbour Kitchen', at:0.91, eta:4}
+  ];
+
+  const runList = document.getElementById('runList');
+  RUNS.forEach(run => {
+    const el = document.createElement('article');
+    el.className = 'run';
+    el.innerHTML =
+      '<div class="run-top"><h3></h3><span class="eta"></span></div>' +
+      '<p class="path"></p>' +
+      '<div class="route" aria-hidden="true">' +
+        '<i class="route-node done"></i><i class="route-seg"><i></i></i>' +
+        '<i class="route-node"></i><i class="route-seg"><i></i></i>' +
+        '<i class="route-node"></i>' +
+      '</div>' +
+      '<div class="run-legend"><span class="on">Collected</span><span>In transit</span><span>Delivered</span></div>';
+    el.querySelector('h3').textContent = 'Run #' + run.id + ' · ' + run.driver;
+    el.querySelector('.path').textContent = run.path;
+    el.querySelector('.eta').textContent = run.eta + ' min away';
+    runList.appendChild(el);
+    run.el = el;
+  });
+
+  const paintRun = (run) => {
+    const segs = run.el.querySelectorAll('.route-seg i');
+    const nodes = run.el.querySelectorAll('.route-node');
+    const legend = run.el.querySelectorAll('.run-legend span');
+    segs[0].style.width = Math.min(run.at / 0.5, 1) * 100 + '%';
+    segs[1].style.width = Math.max((run.at - 0.5) / 0.5, 0) * 100 + '%';
+    nodes[1].classList.toggle('done', run.at >= 0.5);
+    nodes[1].classList.toggle('live', run.at > 0.02 && run.at < 0.5);
+    nodes[2].classList.toggle('done', run.at >= 0.99);
+    nodes[2].classList.toggle('live', run.at >= 0.5 && run.at < 0.99);
+    legend[1].classList.toggle('on', run.at >= 0.5);
+    legend[2].classList.toggle('on', run.at >= 0.99);
+    run.el.querySelector('.eta').textContent = run.eta > 0 ? run.eta + ' min away' : 'Delivered';
+  };
+
+  window.setTimeout(() => RUNS.forEach(paintRun), reduceMotion ? 0 : 400);
+
+  if(!reduceMotion){
+    window.setInterval(() => {
+      RUNS.forEach(run => {
+        if(run.at >= 1) return;
+        run.at = Math.min(run.at + 0.02, 1);
+        run.eta = Math.max(run.eta - 1, 0);
+        paintRun(run);
+      });
+    }, 8000);
+  }
+
+  /* ============ Week chart ============ */
+  const WEEK = [
+    {day:'Mon', v:210}, {day:'Tue', v:264}, {day:'Wed', v:188},
+    {day:'Thu', v:392}, {day:'Fri', v:301}, {day:'Sat', v:355}, {day:'Sun', v:150}
+  ];
+  const todayIndex = (new Date().getDay() + 6) % 7;
+  const peak = Math.max.apply(null, WEEK.map(d => d.v));
+  const chart = document.getElementById('chart');
+  const days = document.getElementById('chartDays');
+
+  WEEK.forEach((d, i) => {
+    const bar = document.createElement('span');
+    bar.className = 'bar' + (i === todayIndex ? ' today' : '');
+    bar.innerHTML = '<i></i>';
+    bar.title = d.day + ': ' + d.v + ' meals';
+    chart.appendChild(bar);
+
+    const label = document.createElement('span');
+    label.textContent = d.day;
+    if(i === todayIndex) label.className = 'today';
+    days.appendChild(label);
+  });
+
+  const growBars = () => {
+    WEEK.forEach((d, i) => {
+      chart.children[i].querySelector('i').style.height = Math.round((d.v / peak) * 100) + '%';
+    });
+  };
+  window.setTimeout(growBars, reduceMotion ? 0 : 350);
+
+  /* ============ Where there's room ============ */
+  const NEED = [
+    {name:'St. Anne\u2019s Shelter', what:'Hot meals, chilled · 0.6 km', full:28},
+    {name:'Eastside Community Fridge', what:'Chilled and dry goods · 1.4 km', full:64},
+    {name:'Harbour Kitchen', what:'Dry goods only · 2.8 km', full:88}
+  ];
+  const needList = document.getElementById('needList');
+  NEED.forEach(n => {
+    const li = document.createElement('li');
+    li.innerHTML =
+      '<div class="need-top"><strong></strong><span></span></div>' +
+      '<p class="what"></p>' +
+      '<div class="meter"><i></i></div>';
+    li.querySelector('strong').textContent = n.name;
+    li.querySelector('.need-top span').textContent = n.full + '% full';
+    li.querySelector('.what').textContent = n.what;
+    const fill = li.querySelector('.meter i');
+    if(n.full >= 80) fill.classList.add('full');
+    else if(n.full >= 55) fill.classList.add('high');
+    needList.appendChild(li);
+    window.setTimeout(() => { fill.style.width = n.full + '%'; }, reduceMotion ? 0 : 450);
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create your EcoBite account</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="app.css">
+<style>
+  main{padding-bottom:40px;}
+
+  /* Progress route across the top of the flow */
+  .flow-progress{max-width:640px;margin:44px auto 10px;}
+  .flow-progress .route{margin-bottom:12px;}
+  .flow-labels{display:flex;justify-content:space-between;font-size:0.8rem;color:var(--text-faint);}
+  .flow-labels span{transition:color .4s ease;}
+  .flow-labels span.on{color:var(--leaf-bright);font-weight:600;}
+
+  .flow{max-width:640px;margin:0 auto;}
+  .step-panel{display:none;}
+  .step-panel.active{display:block;animation:popIn .5s var(--ease) both;}
+  .step-head{text-align:center;margin:26px 0 30px;}
+  .step-head h1{font-size:clamp(1.7rem,3.4vw,2.3rem);margin-bottom:10px;}
+  .step-head p{color:var(--text-soft);max-width:46ch;margin:0 auto;}
+
+  /* Role cards */
+  .roles{display:grid;gap:14px;}
+  .role{
+    display:flex;align-items:flex-start;gap:16px;width:100%;text-align:left;
+    padding:20px;border-radius:var(--r-lg);cursor:pointer;
+    background:var(--panel);border:1px solid var(--panel-line);color:var(--cream);
+    font-family:'Inter',sans-serif;
+    transition:border-color .25s ease, background .25s ease, transform .25s var(--ease), box-shadow .25s ease;
+  }
+  .role:hover{border-color:var(--leaf-bright);background:var(--panel-2);transform:translateY(-3px);box-shadow:0 18px 34px -24px rgba(0,0,0,0.8);}
+  .role:active{transform:translateY(0);}
+  .role-icon{
+    width:46px;height:46px;border-radius:13px;flex:none;display:grid;place-items:center;
+    background:rgba(139,195,74,0.12);border:1px solid rgba(139,195,74,0.25);
+    transition:background .25s ease, transform .35s var(--ease);
+  }
+  .role:hover .role-icon{background:rgba(139,195,74,0.2);transform:rotate(-6deg) scale(1.06);}
+  .role-icon svg{width:22px;height:22px;fill:none;stroke:var(--leaf-bright);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+  .role h3{font-size:1.08rem;margin-bottom:5px;}
+  .role p{font-size:0.9rem;color:var(--text-soft);}
+  .role .arrow{
+    margin-left:auto;align-self:center;flex:none;width:9px;height:9px;
+    border-right:2px solid var(--text-faint);border-top:2px solid var(--text-faint);
+    transform:rotate(45deg);transition:transform .3s var(--ease), border-color .3s ease;
+  }
+  .role:hover .arrow{border-color:var(--leaf-bright);transform:rotate(45deg) translate(3px,-3px);}
+
+  /* Step 2 */
+  .picked{
+    display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+    padding:13px 18px;border-radius:var(--r-md);margin-bottom:26px;
+    background:rgba(139,195,74,0.09);border:1px solid rgba(139,195,74,0.22);
+  }
+  .picked strong{font-weight:600;font-size:0.94rem;}
+  .picked button{
+    background:none;border:none;color:var(--leaf-bright);font:inherit;font-size:0.86rem;
+    cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:2px 4px;
+  }
+  .role-fields{display:none;}
+  .role-fields.show{display:block;}
+  .pw-wrap{position:relative;}
+  .pw-wrap input{padding-right:78px;}
+  .pw-toggle{
+    position:absolute;right:8px;top:50%;transform:translateY(-50%);
+    background:none;border:none;color:var(--text-soft);font:inherit;font-size:0.82rem;
+    cursor:pointer;padding:6px 10px;border-radius:8px;transition:color .2s ease,background .2s ease;
+  }
+  .pw-toggle:hover{color:var(--cream);background:rgba(255,255,255,0.07);}
+  .terms{display:flex;gap:11px;align-items:flex-start;margin:8px 0 22px;font-size:0.88rem;color:var(--text-soft);}
+  .terms input{margin-top:4px;accent-color:var(--leaf-bright);width:17px;height:17px;flex:none;}
+  .terms a{color:var(--leaf-bright);}
+  .form-actions{display:flex;gap:12px;align-items:center;}
+  .form-actions .btn-ghost{flex:none;}
+  .form-actions .btn-primary{flex:1;}
+
+  /* Step 3 */
+  .done{text-align:center;padding:14px 0 10px;}
+  .done .check-mark{width:62px;height:62px;margin:0 auto 20px;}
+  .done h1{font-size:clamp(1.7rem,3.4vw,2.3rem);margin-bottom:12px;}
+  .done > p{color:var(--text-soft);max-width:44ch;margin:0 auto 30px;}
+  .next{text-align:left;display:grid;gap:2px;margin-bottom:28px;}
+  .next li{
+    display:flex;gap:14px;align-items:flex-start;padding:16px 4px;
+    border-top:1px solid var(--panel-line);
+  }
+  .next li:first-child{border-top:none;}
+  .next .n{
+    width:24px;height:24px;border-radius:50%;flex:none;display:grid;place-items:center;
+    background:rgba(139,195,74,0.14);color:var(--leaf-bright);font-size:0.78rem;font-weight:700;
+  }
+  .next strong{display:block;font-size:0.95rem;margin-bottom:2px;}
+  .next span{font-size:0.88rem;color:var(--text-soft);}
+  .done-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+
+  @media (max-width:560px){
+    .role{padding:16px;gap:13px;}
+    .form-actions{flex-direction:column-reverse;}
+    .form-actions .btn{width:100%;}
+  }
+</style>
+</head>
+<body>
+
+<header class="site-nav" id="siteNav">
+  <div class="wrap nav-row">
+    <a href="index.html" class="brand">
+      <img src="logo-icon.webp" alt="">
+      <span>ecobite</span>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html#how">How it works</a>
+      <a href="index.html#impact">Impact</a>
+      <a href="index.html#network">Who it's for</a>
+    </nav>
+    <div class="nav-end">
+      <a href="signin.html" class="btn btn-outline btn-sm">Sign in</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="flow-progress">
+      <div class="route" id="flowRoute" aria-hidden="true">
+        <i class="route-node done"></i>
+        <i class="route-seg"><i></i></i>
+        <i class="route-node"></i>
+        <i class="route-seg"><i></i></i>
+        <i class="route-node"></i>
+      </div>
+      <div class="flow-labels" id="flowLabels">
+        <span class="on">Your role</span>
+        <span>Your details</span>
+        <span>Done</span>
+      </div>
+    </div>
+
+    <div class="flow">
+
+      <!-- STEP 1 — ROLE -->
+      <section class="step-panel active" id="step1" aria-label="Choose your role">
+        <div class="step-head">
+          <h1>What brings you to EcoBite?</h1>
+          <p>Pick the one that fits best. It decides what you'll see on your dashboard.</p>
+        </div>
+
+        <div class="roles">
+          <button class="role" type="button" data-role="donor">
+            <span class="role-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h16l-1.2 10.2a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8L4 9Z"/><path d="M8.5 9V6.5a3.5 3.5 0 0 1 7 0V9"/></svg>
+            </span>
+            <span>
+              <h3>I have surplus food</h3>
+              <p>Restaurants, grocers, bakeries, farms and caterers. Flag what's left over before it spoils.</p>
+            </span>
+            <span class="arrow" aria-hidden="true"></span>
+          </button>
+
+          <button class="role" type="button" data-role="org">
+            <span class="role-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21V10l9-6 9 6v11"/><path d="M9 21v-6h6v6"/><path d="M3 21h18"/></svg>
+            </span>
+            <span>
+              <h3>I distribute food to people</h3>
+              <p>Food banks, shelters, kitchens and community fridges. Get matched to surplus nearby.</p>
+            </span>
+            <span class="arrow" aria-hidden="true"></span>
+          </button>
+
+          <button class="role" type="button" data-role="driver">
+            <span class="role-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 16V8h11v8"/><path d="M13 11h4.5l3.5 3.2V16"/><circle cx="7" cy="17.5" r="2"/><circle cx="17" cy="17.5" r="2"/></svg>
+            </span>
+            <span>
+              <h3>I can move food</h3>
+              <p>Volunteer drivers, riders and walkers. Pick up runs that fit around your week.</p>
+            </span>
+            <span class="arrow" aria-hidden="true"></span>
+          </button>
+        </div>
+      </section>
+
+      <!-- STEP 2 — DETAILS -->
+      <section class="step-panel" id="step2" aria-label="Your details">
+        <div class="step-head">
+          <h1>Tell us the basics</h1>
+          <p>Enough to match you well. You can fill in the rest later.</p>
+        </div>
+
+        <div class="picked">
+          <span>Signing up as <strong id="pickedLabel">—</strong></span>
+          <button type="button" id="changeRole">Change</button>
+        </div>
+
+        <form id="detailsForm" novalidate>
+
+          <!-- Donor -->
+          <div class="role-fields" data-fields="donor">
+            <label class="field">
+              <span>Business name</span>
+              <input type="text" name="org" data-req placeholder="Rosa's Kitchen">
+              <em class="error">Add the name people know you by.</em>
+            </label>
+            <label class="field">
+              <span>Kind of place</span>
+              <select name="kind" data-req>
+                <option value="">Choose one</option>
+                <option>Restaurant or café</option>
+                <option>Grocery or convenience store</option>
+                <option>Bakery</option>
+                <option>Farm or producer</option>
+                <option>Catering or canteen</option>
+              </select>
+              <em class="error">Pick the closest match.</em>
+            </label>
+            <div class="field">
+              <span>When surplus usually shows up</span>
+              <div class="chips">
+                <label class="chip"><input type="checkbox" name="window" value="Mornings"><span>Mornings</span></label>
+                <label class="chip"><input type="checkbox" name="window" value="Afternoons"><span>Afternoons</span></label>
+                <label class="chip"><input type="checkbox" name="window" value="Evenings"><span>Evenings</span></label>
+                <label class="chip"><input type="checkbox" name="window" value="Close of day"><span>Close of day</span></label>
+              </div>
+              <em class="help">Pick any that apply — it shapes when we check in.</em>
+            </div>
+          </div>
+
+          <!-- Organisation -->
+          <div class="role-fields" data-fields="org">
+            <label class="field">
+              <span>Organisation name</span>
+              <input type="text" name="org" data-req placeholder="Eastside Community Fridge">
+              <em class="error">Add your organisation's name.</em>
+            </label>
+            <label class="field">
+              <span>People you serve each week</span>
+              <select name="reach" data-req>
+                <option value="">Choose a range</option>
+                <option>Under 50</option>
+                <option>50 – 200</option>
+                <option>200 – 750</option>
+                <option>More than 750</option>
+              </select>
+              <em class="error">A rough range is fine.</em>
+            </label>
+            <div class="field">
+              <span>Storage you can offer</span>
+              <div class="chips">
+                <label class="chip"><input type="checkbox" name="storage" value="Chilled"><span>Chilled</span></label>
+                <label class="chip"><input type="checkbox" name="storage" value="Frozen"><span>Frozen</span></label>
+                <label class="chip"><input type="checkbox" name="storage" value="Dry goods"><span>Dry goods</span></label>
+                <label class="chip"><input type="checkbox" name="storage" value="Same-day only"><span>Same-day only</span></label>
+              </div>
+              <em class="help">We only send you what you can actually hold.</em>
+            </div>
+          </div>
+
+          <!-- Driver -->
+          <div class="role-fields" data-fields="driver">
+            <label class="field">
+              <span>How you'd move food</span>
+              <select name="transport" data-req>
+                <option value="">Choose one</option>
+                <option>On foot</option>
+                <option>Bicycle or cargo bike</option>
+                <option>Car</option>
+                <option>Van</option>
+              </select>
+              <em class="error">Let us know what you'll be using.</em>
+            </label>
+            <div class="field">
+              <span>When you're usually free</span>
+              <div class="chips">
+                <label class="chip"><input type="checkbox" name="free" value="Weekday mornings"><span>Weekday mornings</span></label>
+                <label class="chip"><input type="checkbox" name="free" value="Weekday evenings"><span>Weekday evenings</span></label>
+                <label class="chip"><input type="checkbox" name="free" value="Weekends"><span>Weekends</span></label>
+                <label class="chip"><input type="checkbox" name="free" value="On call"><span>On call</span></label>
+              </div>
+              <em class="help">Runs only get offered to you inside these windows.</em>
+            </div>
+          </div>
+
+          <!-- Everyone -->
+          <div class="field-row">
+            <label class="field">
+              <span>Your name</span>
+              <input type="text" name="name" data-req placeholder="Priya Menon">
+              <em class="error">We'd like to know who we're talking to.</em>
+            </label>
+            <label class="field">
+              <span>City</span>
+              <input type="text" name="city" data-req placeholder="Visakhapatnam">
+              <em class="error">Matching is local, so we need your city.</em>
+            </label>
+          </div>
+
+          <label class="field">
+            <span>Email</span>
+            <input type="email" name="email" data-req data-email placeholder="you@example.com">
+            <em class="error">That email doesn't look right.</em>
+          </label>
+
+          <label class="field">
+            <span>Password</span>
+            <span class="pw-wrap">
+              <input type="password" name="password" data-req data-min="8" placeholder="At least 8 characters">
+              <button type="button" class="pw-toggle" id="pwToggle">Show</button>
+            </span>
+            <em class="error">Use 8 characters or more.</em>
+          </label>
+
+          <label class="terms">
+            <input type="checkbox" id="terms">
+            <span>I agree to the <a href="#">food handling guidelines</a> and <a href="#">terms of use</a>.</span>
+          </label>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-ghost" id="backToRole">Back</button>
+            <button type="submit" class="btn btn-primary">Create account</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- STEP 3 — DONE -->
+      <section class="step-panel" id="step3" aria-label="Account created">
+        <div class="done">
+          <svg class="check-mark" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M7.4 12.4l3.1 3.1 6.1-6.6"/>
+          </svg>
+          <h1>You're in, <span id="doneName">friend</span>.</h1>
+          <p id="doneLine">Your dashboard is ready. Here's what happens from here.</p>
+
+          <ol class="next" id="nextList"></ol>
+
+          <div class="done-actions">
+            <a href="home.html" class="btn btn-primary">Go to your dashboard</a>
+            <a href="index.html" class="btn btn-outline">Back to the site</a>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap foot-row">
+    <span>© 2026 EcoBite. Concept preview — not a live service.</span>
+    <div class="foot-links">
+      <a href="index.html">Home</a>
+      <a href="signin.html">Sign in</a>
+      <a href="home.html">Dashboard</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const nav = document.getElementById('siteNav');
+  document.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 10);
+  }, {passive:true});
+
+  const panels = [document.getElementById('step1'), document.getElementById('step2'), document.getElementById('step3')];
+  const nodes  = Array.from(document.querySelectorAll('#flowRoute .route-node'));
+  const segs   = Array.from(document.querySelectorAll('#flowRoute .route-seg i'));
+  const labels = Array.from(document.querySelectorAll('#flowLabels span'));
+
+  const ROLES = {
+    donor: {
+      label: 'a food donor',
+      line: 'We\u2019ll start watching your sales and delivery patterns so surplus gets flagged before it turns.',
+      next: [
+        ['Connect your till or upload a week of sales', 'The forecast gets sharper with every day of history.'],
+        ['We flag surplus before it turns', 'You\u2019ll get a prompt to confirm \u2014 one tap, no paperwork.'],
+        ['A driver collects it', 'You\u2019ll see who\u2019s coming and when, and where the food ended up.']
+      ]
+    },
+    org: {
+      label: 'a distributing organisation',
+      line: 'We\u2019ll only send you offers that fit what you can store and collect.',
+      next: [
+        ['Set what you can take', 'Chilled, frozen or dry \u2014 and how much fits in a day.'],
+        ['Offers arrive as surplus is flagged', 'Accept the ones that work. Passing costs you nothing.'],
+        ['Track every handoff', 'Arrival times, quantities and a record for your reporting.']
+      ]
+    },
+    driver: {
+      label: 'a volunteer driver',
+      line: 'Runs will only be offered inside the windows you gave us.',
+      next: [
+        ['Confirm your area', 'We keep runs close to where you already are.'],
+        ['Take the runs that suit you', 'Each one shows distance, load size and a collection window.'],
+        ['See where it landed', 'Every run ends with who received the food.']
+      ]
+    }
+  };
+
+  let role = null;
+
+  const paint = (step) => {
+    panels.forEach((p, i) => p.classList.toggle('active', i === step));
+    nodes.forEach((n, i) => {
+      n.classList.toggle('done', i < step);
+      n.classList.toggle('live', i === step);
+    });
+    segs.forEach((s, i) => { s.style.width = i < step ? '100%' : '0%'; });
+    labels.forEach((l, i) => l.classList.toggle('on', i === step));
+    if(step > 0) window.scrollTo({top: 0, behavior: reduceMotion ? 'auto' : 'smooth'});
+  };
+  paint(0);
+
+  const setRole = (key) => {
+    role = key;
+    document.getElementById('pickedLabel').textContent = ROLES[key].label;
+    document.querySelectorAll('.role-fields').forEach(el => {
+      const on = el.dataset.fields === key;
+      el.classList.toggle('show', on);
+      el.querySelectorAll('input,select').forEach(f => { f.disabled = !on; });
+    });
+    paint(1);
+  };
+
+  document.querySelectorAll('.role').forEach(btn => {
+    btn.addEventListener('click', () => setRole(btn.dataset.role));
+  });
+
+  document.getElementById('changeRole').addEventListener('click', () => paint(0));
+  document.getElementById('backToRole').addEventListener('click', () => paint(0));
+
+  const pwInput = document.querySelector('input[name="password"]');
+  const pwToggle = document.getElementById('pwToggle');
+  pwToggle.addEventListener('click', () => {
+    const showing = pwInput.type === 'text';
+    pwInput.type = showing ? 'password' : 'text';
+    pwToggle.textContent = showing ? 'Show' : 'Hide';
+  });
+
+  const form = document.getElementById('detailsForm');
+  const terms = document.getElementById('terms');
+
+  const flagField = (input, bad) => {
+    const field = input.closest('.field');
+    if(field) field.classList.toggle('invalid', bad);
+  };
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let firstBad = null;
+
+    form.querySelectorAll('[data-req]').forEach(input => {
+      if(input.disabled) return;
+      let bad = !input.value.trim();
+      if(!bad && input.dataset.email) bad = !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(input.value.trim());
+      if(!bad && input.dataset.min) bad = input.value.length < Number(input.dataset.min);
+      flagField(input, bad);
+      if(bad && !firstBad) firstBad = input;
+    });
+
+    const termsWrap = terms.closest('.terms');
+    if(!terms.checked){
+      termsWrap.classList.remove('shake');
+      void termsWrap.offsetWidth;
+      termsWrap.classList.add('shake');
+      if(!firstBad) firstBad = terms;
+    }
+
+    if(firstBad){
+      firstBad.focus({preventScroll:true});
+      firstBad.scrollIntoView({block:'center', behavior: reduceMotion ? 'auto' : 'smooth'});
+      return;
+    }
+
+    const name = form.querySelector('input[name="name"]').value.trim().split(' ')[0];
+    document.getElementById('doneName').textContent = name || 'friend';
+    document.getElementById('doneLine').textContent = ROLES[role].line;
+
+    const list = document.getElementById('nextList');
+    list.innerHTML = '';
+    ROLES[role].next.forEach(([title, body], i) => {
+      const li = document.createElement('li');
+      li.innerHTML = '<span class="n">' + (i + 1) + '</span><span><strong></strong><span></span></span>';
+      li.querySelector('strong').textContent = title;
+      li.querySelector('span span').textContent = body;
+      list.appendChild(li);
+    });
+
+    try{
+      sessionStorage.setItem('ecobite-role', role);
+      sessionStorage.setItem('ecobite-name', form.querySelector('input[name="name"]').value.trim());
+    }catch(err){ /* private mode — the demo still works */ }
+
+    paint(2);
+  });
+
+  form.querySelectorAll('input,select').forEach(input => {
+    input.addEventListener('input', () => flagField(input, false));
+    input.addEventListener('change', () => flagField(input, false));
+  });
+</script>
+
+</body>
+</html>
