@@ -529,7 +529,17 @@
     submitBtn.classList.add('loading');
     submitLabel.textContent = 'Creating your account';
 
-    const { data, error } = await sb.auth.signUp({ email, password });
+    // The form details ride along as sign-up metadata; a database
+    // trigger (handle_new_user in supabase-schema.sql) turns them
+    // into the profiles row server-side. Inserting from the browser
+    // after signUp breaks when email confirmation is on — there's no
+    // session yet at that point, so RLS blocks the anonymous insert
+    // with "new row violates row-level security policy".
+    const { data, error } = await sb.auth.signUp({
+      email,
+      password,
+      options: { data: profile }
+    });
 
     if(error){
       submitBtn.classList.remove('loading');
@@ -539,20 +549,8 @@
       return;
     }
 
-    let profileError = null;
-    if(data.user){
-      const { error: pErr } = await sb.from('profiles').insert({ id: data.user.id, ...profile });
-      profileError = pErr;
-    }
-
     submitBtn.classList.remove('loading');
     submitLabel.textContent = 'Create account';
-
-    if(profileError){
-      note.textContent = 'Your account was created, but we couldn\u2019t save your details: ' + profileError.message;
-      note.classList.add('show');
-      return;
-    }
 
     document.getElementById('doneName').textContent = fullName.split(' ')[0] || 'friend';
 
